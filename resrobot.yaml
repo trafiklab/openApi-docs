@@ -178,12 +178,12 @@ paths:
     get:
       tags:
       - Routeplanning
-      summary: Get a route from A to B using public transport
+      summary: Get a route between 2 points in Sweden using all forms of public transport.
       operationId: getTrip
       parameters:
       - name: originId
         in: query
-        description: The starting location of your journey. This id can be retrieved from GTFS Sverige 2.
+        description: The 9-digit stop ID for the origin of your journey. This id can be retrieved from the station lookup endpoint, or from the stops.txt file in GTFS Sverige 2.
         required: true
         style: form
         schema:
@@ -192,7 +192,7 @@ paths:
           pattern: '^\d{9}$'
       - name: destId
         in: query
-        description: The destination of your journey. This id can be retrieved from GTFS Sverige 2.
+        description: The 9-digit stop ID for the destination of your journey. This id can be retrieved from the station lookup endpoint, or from the stops.txt file in GTFS Sverige 2.
         required: true
         style: form
         schema:
@@ -203,7 +203,7 @@ paths:
         in: query
         required: false
         deprecated: true
-        description: 'Alternative for originId, the latitude of the starting location. When this field is provided, originId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to our servers. It is instead recommended to search the nearest stpås by using a database on the client device, and using the nearest stop for originId.'
+        description: "The latitude of the starting location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, originId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for originId."
         style: form
         schema:
           type: number
@@ -212,7 +212,7 @@ paths:
         in: query
         required: false
         deprecated: true
-        description: 'Alternative for originId, the longtitude of the starting location. When this field is provided, originId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to our servers. It is instead recommended to search the nearest stpås by using a database on the client device, and using the nearest stop for originId.'
+        description: "The longitude of the starting location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, originId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for originId."
         style: form
         schema:
           type: number
@@ -221,7 +221,7 @@ paths:
         in: query
         required: false
         deprecated: true
-        description: 'Alternative for destId, the latitude of the destination. When this field is provided, destId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to our servers. It is instead recommended to search the nearest stops by using a database on the client device, and using the nearest stop for originId.'
+        description: "The latitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
         style: form
         schema:
           type: number
@@ -230,14 +230,14 @@ paths:
         in: query
         required: false
         deprecated: true
-        description: 'Alternative for destId, the longtitude of the destination. When this field is provided, destId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to our servers. It is instead recommended to search the nearest stops by using a database on the client device, and using the nearest stop for originId.'
+        description: "The longitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
         style: form
         schema:
           type: number
           format: double
       - name: date
         in: query
-        description: 'The date on which the journey should depart or arrive. Formatted as YYYY-MM-DD.'
+        description: 'The date on which the journey should depart or arrive. Formatted as YYYY-MM-DD. When unspecified, the current date is used.'
         required: false
         style: form
         schema:
@@ -247,7 +247,7 @@ paths:
             default: 
       - name: time
         in: query
-        description: 'The time at which the journey should depart or arrive. Formatted as HH:mm.'
+        description: 'The time at which the journey should depart or arrive. Formatted as HH:mm. When unspecified, the current time is used.'
         required: false
         style: form
         schema:
@@ -257,7 +257,7 @@ paths:
             default: 
       - name: searchForArrival
         in: query
-        description: 'Setting this value to 1 will search for trips arriving at the specified time, instead of searching trips departing at the specified time.'
+        description: 'Whether you want to specify the departure or arrival date and time. Setting this value to 1 will search for trips arriving at the specified time, setting it to 0 will search for trips departing at the specified time.'
         required: false
         style: form
         schema:
@@ -267,7 +267,7 @@ paths:
             default: 0
       - name: viaId
         in: query
-        description: 'Id of a via station through which the journey should be planned. This id can be retrieved from GTFS Sverige 2.'
+        description: '9-Digit id of a via station through which the journey should be planned. This id can be determined in the same ways as origin or destination ids.'
         required: false
         style: form
         schema:
@@ -276,7 +276,7 @@ paths:
             pattern: '^\d{9}$'
       - name: viaWaitTime
         in: query
-        description: 'Defines the waiting time spent at via station in minutes.'
+        description: 'Defines the minimum waiting time spent at the specified via station in minutes. This field is used in combination with viaId'
         required: false
         style: form
         schema:
@@ -286,7 +286,7 @@ paths:
             default: 0
       - name: context
         in: query
-        description: A string, returned in a previous response, to get earlier or later results. 
+        description: 'Defines the starting point for the scroll back or forth operation. Use the scrB value from a previous result to scroll backwards in time and use the scrF value to scroll forth.'
         required: false
         style: form
         schema:
@@ -294,7 +294,7 @@ paths:
             format: int64
       - name: numF
         in: query
-        description: 'The number of journeys, taking place _before_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_.'
+        description: 'The minimum number of journeys, taking place _before_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested.'
         required: false
         style: form
         schema:
@@ -303,7 +303,7 @@ paths:
             default: 4
       - name: numB
         in: query
-        description: 'The number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_.'
+        description: 'The nminimum umber of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note tat the response can contain more results than requested. Searching backwards can significantly slow down your request.'
         required: false
         style: form
         schema:
@@ -312,13 +312,29 @@ paths:
             default: 1
       - name: maxChange
         in: query
-        description: The maximum number of transfers in the journey. When not specified, no maximum will be enforced.
+        description: The maximum number of changes in the journey.
         required: false
         style: form
         schema:
           minimum: 1
-          maximum: 3
-          enum: [1,2,3]
+          maximum: 11
+          default: 11
+          type: integer
+          format: int32
+      - name: minChangeTime
+        in: query
+        description: The minumum change time at transfer stations, in minutes.
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int32
+      - name: maxChangeTime
+        in: query
+        description: The maximum change time at transfer stations, in minutes.
+        required: false
+        style: form
+        schema:
           type: integer
           format: int32
       - name: changeTimePercent
@@ -329,8 +345,9 @@ paths:
         as initially calculated by the system.'
         style: form
         schema:
-          minimum: 100
+          minimum: 0
           maximum: 500
+          default: 100
           type: integer
           format: int32
       - name: products
@@ -346,6 +363,7 @@ paths:
           <li> 64: Trams and light rail</li> 
           <li> 128: Local busses</li> 
           <li> 256: Ferries, boats and cruises</li> 
+          <li> 512: Taxi</li> 
         </ul>'
         required: false
         style: form
@@ -354,7 +372,7 @@ paths:
           format: int32
       - name: operators
         in: query
-        description: Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id.
+        description: "Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id. Theses ids can be found in the 'GTFS Sverige 2' agencies.txt file. Multiple operators can be specified by concatenating their ids with a comma ',' as separation."
         required: false
         style: form
         schema:
@@ -365,7 +383,7 @@ paths:
             format: int32
       - name: poly
         in: query
-        description: Enables/disables the calculation of the polyline for each leg of the trip.
+        description: Enables/disables the calculation of the polyline for each leg of the trip. This polyline visualises the exact route on a map.
         schema:
             type: integer
             format: int32
@@ -373,7 +391,7 @@ paths:
             default: 0
       - name: passList
         in: query
-        description: Enables/disables the return of the passlist for each leg of the trip.
+        description: Enables/disables the return of the passlist for each leg of the trip. A passlist is a list of all stops where the traveller passes without changing.
         schema:
             type: integer
             format: int32
@@ -381,7 +399,13 @@ paths:
             default: 0
       - name: origWalk
         in: query
-        description: 'Enables/disables using footpaths in the beginning of a trip when searching from an address. To finetune the minimum and/or maximum distance to the next public transport station, provide these values separted by comma. Thesevalues are expressed in meters. E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter originWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.'
+        description: "Enables/disables using footpaths in the beginning of a trip when searching from an address. To finetune the minimum and/or maximum distance to the next public transport station, provide the following values separted by comma:
+        <ul>
+          <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
+          <li>The minimum walking distance (in meters)
+          <li>The maximum walking distance (in meters)
+        </ul>
+        <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter originWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
         schema:
           type: array
           format: csv
@@ -390,13 +414,27 @@ paths:
             format: int32
       - name: destWalk
         in: query
-        description: 'Enables/disables using footpaths in the beginning of a trip when searching from an address. To finetune the minimum and/or maximum distance to the next public transport station, provide these values separted by comma. Thesevalues are expressed in meters. E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter originWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.'
+        description:  "Enables/disables using footpaths in the end of a trip when searching to an address. To finetune the minimum and/or maximum distance to the next public transport station, provide the following values separted by comma:
+        <ul>
+          <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
+          <li>The minimum walking distance (in meters)
+          <li>The maximum walking distance (in meters)
+        </ul>
+        <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter destWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
         schema:
           type: array
           format: csv
           items:
             type: integer
             format: int32
+      - name: unsharp
+        in: query
+        description: If the unsharp search mode is requested, the algorithm will take additional stations nearby the given start and destination station into account. This can help when searching from a small bus stop, in which case it might be more interesting to walk a few hundred meters to a bus stop with more traffic. 
+        schema:
+          type: integer
+          format: int32
+          enum: [0, 1]
+          default: 0            
       - name: format
         in: query
         description: Whether or not to include the list of stations which are passed on this journey.
