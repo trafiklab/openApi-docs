@@ -37,19 +37,22 @@ paths:
       tags:
       - Station lookup
       summary: 'Use this method to search for stations and stops based on a name.' 
-      description: 'Use this method to search for stations and stops based on a name. You can search for stations for both departures and arrival of a call. The stations found can then be presented to a user so that they can choose exactly which station they want to travel to or from. This method is not designed to be used for auto-complete solutions where a search is done while the user enters the name of a station. If you wish to use autocomplete, or if you want to provide your users with **the best experience**, please use the **GTFS Sverige 2 stops.txt** file as an offline database.'
+      description: 'Use this method to search for stations and stops based on a name. You can search for stations for both departures and arrival of a call. The stations found can then be presented to a user so that they can choose exactly which station they want to travel to or from. This method is not designed to be used for auto-complete solutions where a search is done while the user enters the name of a station. If you wish to use autocomplete, or if you want to provide your users with **the best experience**, please use the **GTFS Sverige 2 stops.txt** file as an offline database.
+        <h3>Order of the results</h3>
+        <p>The results are ordered by station “weight”, where stations with more weight are shown higher in the list. Each station or stop is assigned a weight value which indicates how “busy” this station is. The higher the value, the more “busy” the station is. The calculation is based on the product classes. For each product class operating at this stop, the frequency how often this product class operates is rated between 0 and 3 where 0 means this product isn’t operating and 3 means that this product operates at a high frequency. Then an individual weight is calculated for product class by multiplying the frequency rating with a certain factor. These factors take into account that traffic by trains for example weighs higher than traffic by busses. The weight for the station is then the sum over all individual weights for each product class.</p>'
       operationId: lookupStationName
       parameters:
       - name: input
         in: query
-        description: The name, or a part of the name, of the station that should be looked up. Add a '?' to the end if you want to enable partial matching (e.g. 'sto?' will match anything that contains stockholm, while 'sto' will search for an exact name). This name should be [URL-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding).
+        description: 'The name, or a part of the name, of the station that should be looked up. <p>By default, the system will search for results with a 100% match between the search string and results. For example, when searching for "stock" it will only return results which contain "stock" somewhere in their name. However, in many cases it may be of interest to see the other results which may not represent a 100% match but are still quite close. To enable this output, add a question mark “?” at the end of the input string. Then the service will also return the other, non-100% matching results up to the specified maximum number of results. For example, "Mälarsjukhus?" will also return "Mälarparksvägen" because of the partial match, but would not be included without the question mark in the query. 
+          <p>This name should be [URL-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding).</p>'
         required: true
         style: form
         schema:
             type: string
       - name: maxNo
         in: query
-        description: 'The number of results that should be returned.'
+        description: 'The maximum number of results to return.'
         required: false
         style: form
         schema:
@@ -58,12 +61,12 @@ paths:
             maximum: 50
       - name: lang
         in: query
-        description: 'The language used for error messages.'
+        description: 'The language used for informational texts and error messages.'
         required: false
         style: form
         schema:
             type: string
-            enum: [sv,en,de]
+            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
             default: sv
       - name: format
         in: query
@@ -72,15 +75,8 @@ paths:
         style: form
         schema:
             type: string
-            enum: [json,xml]
+            enum: [json, xml]
             default: xml
-      - name: jsonpCallback
-        in: query
-        description: 'Name of the Javascript function that receives response data.'
-        required: false
-        style: form
-        schema:
-            type: string
       responses:
         200:
           description: Successful request
@@ -98,12 +94,14 @@ paths:
       tags:
       - Station lookup
       summary: 'Use this method to search for stations and stops nearby a given location.' 
-      description: 'Use this method to find stations and stops within a given geographical area. Submit the central coordinates and the radius to search in order to retrieve a list of nearby stops, including the type of traffic (train, bus, etc.). Coordinates should be given in WGS84 format (EPSG:4326).'
+      description: 'Use this method to find stations and stops within a certain distance of given coordinates. Submit the central coordinates and the radius to search in order to retrieve a list of nearby stops, including the type of traffic (train, bus, etc.). Coordinates should be given in WGS84 format (EPSG:4326).
+      <h4>Privacy</h4>
+      <p>The location of a person is personal data according to the European General Data Protection Regulation (GDPR). This means you are required to obtain permission from users before using this data. You are also required to take measures to protect this personal data. This means you should not log it, and you should always use HTTPS connections. If a secure HTTPS connection is not possible, the client should not transmit coordinates.</p>'
       operationId: lookupStationByLocation
       parameters:
       - name: originCoordLat
         in: query
-        description: The latitude of the location to search.
+        description: The latitude (easting, y-coordinate) of the location where you want to search, in degrees.
         required: true
         style: form
         schema:
@@ -112,7 +110,7 @@ paths:
             maximum: 180
       - name: originCoordLon
         in: query
-        description: The longitude of the location to search.
+        description: The longitude (northing, x-coordinate) of the location where you want to search, in degrees.
         required: true
         style: form
         schema:
@@ -130,7 +128,7 @@ paths:
             maximum: 10000
       - name: maxNo
         in: query
-        description: 'The number of results that should be returned.'
+        description: 'The maximum number of results that should be returned.'
         required: false
         style: form
         schema:
@@ -139,12 +137,12 @@ paths:
             maximum: 1000
       - name: lang
         in: query
-        description: 'The language used for error messages.'
+        description: 'The language used for informational texts and error messages.'
         required: false
         style: form
         schema:
             type: string
-            enum: [sv,en,de]
+            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
             default: sv
       - name: format
         in: query
@@ -153,15 +151,8 @@ paths:
         style: form
         schema:
             type: string
-            enum: [json,xml]
+            enum: [json, xml]
             default: xml
-      - name: jsonpCallback
-        in: query
-        description: 'Name of the Javascript function that receives response data.'
-        required: false
-        style: form
-        schema:
-            type: string
       responses:
         200:
           description: Successful request
@@ -286,7 +277,7 @@ paths:
             default: 0
       - name: context
         in: query
-        description: 'Defines the starting point for the scroll back or forth operation. Use the scrB value from a previous result to scroll backwards in time and use the scrF value to scroll forth.'
+        description: 'Defines the starting point for the scroll back or forth operation. Use the <strong>scrB</strong> value from a previous result to scroll backwards in time and use the <strong>scrF</strong> value to scroll forth.'
         required: false
         style: form
         schema:
@@ -303,7 +294,7 @@ paths:
             default: 4
       - name: numB
         in: query
-        description: 'The nminimum umber of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note tat the response can contain more results than requested. Searching backwards can significantly slow down your request.'
+        description: 'The nminimum number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested. Searching backwards can significantly slow down your request.'
         required: false
         style: form
         schema:
@@ -434,7 +425,16 @@ paths:
           type: integer
           format: int32
           enum: [0, 1]
-          default: 0            
+          default: 0       
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+            type: string
+            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+            default: sv
       - name: format
         in: query
         description: Whether or not to include the list of stations which are passed on this journey.
@@ -469,10 +469,11 @@ paths:
       - Timetables
       summary: Get departures at a stoplocation
       operationId: getDepartureBoard
+      description: 'This method will return the next departures from a given point in time.<h3>Scrolling</h3><p>To scroll station boards, following action is to be performed: Take the departure time of the last departure of your result. Add one minute and do the same request with the new time value again. If the response passes midnight, the date has to be incremented too.</p>'
       parameters:
       - name: id
         in: query
-        description: 'Specifies the station/stop ID for which the departures shall be retrieved This id can be retrieved from GTFS Sverige 2.'
+        description: 'Specifies the station/stop ID for which the departures shall be retrieved. This id can be retrieved from GTFS Sverige 2.'
         required: true
         style: form
         schema:
@@ -481,7 +482,7 @@ paths:
           pattern: '^\d{9}$'
       - name: date
         in: query
-        description: 'The date on which the journey should depart. Formatted as YYYY-MM-DD. Default when not specified: now.'
+        description: 'The date on which the departures should depart. Formatted as YYYY-MM-DD. Default when not specified: now.'
         required: false
         style: form
         schema:
@@ -491,7 +492,7 @@ paths:
             default: Current server date
       - name: time
         in: query
-        description: 'The time at which the journey should depart. Formatted as HH:mm. Default when not specified: now.'
+        description: 'The time whereafter departures should depart. Formatted as HH:mm. Default when not specified: now.'
         required: false
         style: form
         schema:
@@ -501,13 +502,13 @@ paths:
             default: Current server time
       - name: maxJourneys
         in: query
-        description: The maximum number of results to return
+        description: The maximum number of results to return. Note that this is not a hard limit. If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
         required: false
         style: form
         schema:
           type: integer
           format: int64
-          default: 20
+          default: 25
       - name: direction
         in: query
         description: 'If only vehicles departing or arriving from a certain direction shall be returned, specify the direction by giving the station/stop ID of the last stop on the journey.'
@@ -530,6 +531,7 @@ paths:
           <li> 64: Trams and light rail</li> 
           <li> 128: Local busses</li> 
           <li> 256: Ferries, boats and cruises</li> 
+          <li> 512: Taxi</li> 
         </ul>'
         required: false
         style: form
@@ -574,10 +576,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/LocationMissingException'
         404:
-          description: Pet not found
-          content: {}
-        405:
-          description: Validation exception
+          description: Not found
           content: {}
       security:
       - api_key_timetable: []
@@ -587,10 +586,11 @@ paths:
       - Timetables
       summary: Get arrivals at a stoplocation
       operationId: getArrivalBoard
+      description: 'This method will return the next arrivals from a given point in time.<h3>Scrolling</h3><p>To scroll station boards, following action is to be performed: Take the arrival time of the last arrival of your result. Add one minute and do the same request with the new time value again. If the response passes midnight, the date has to be incremented too.</p>'
       parameters:
       - name: id
         in: query
-        description: 'Specifies the station/stop ID for which the arrivals shall be retrieved This id can be retrieved from GTFS Sverige 2.'
+        description: 'Specifies the station/stop ID for which the arrivals shall be retrieved. This id can be retrieved from GTFS Sverige 2.'
         required: true
         style: form
         schema:
@@ -618,13 +618,13 @@ paths:
             default: Current server time
       - name: maxJourneys
         in: query
-        description: The maximum number of results to return
+        description: The maximum number of results to return. Note that this is not a hard limit. If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
         required: false
         style: form
         schema:
           type: integer
           format: int64
-          default: 20
+          default: 25
       - name: direction
         in: query
         description: 'If only vehicles departing or arriving from a certain direction shall be returned, specify the direction by giving the station/stop ID of the last stop on the journey.'
@@ -647,6 +647,7 @@ paths:
           <li> 64: Trams and light rail</li> 
           <li> 128: Local busses</li> 
           <li> 256: Ferries, boats and cruises</li> 
+          <li> 512: Taxi</li> 
         </ul>'
         required: false
         style: form
@@ -691,10 +692,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/LocationMissingException'
         404:
-          description: Pet not found
-          content: {}
-        405:
-          description: Validation exception
+          description: Not found
           content: {}
       security:
       - api_key_timetable: []
