@@ -40,7 +40,7 @@ paths:
         304:
           $ref: "#/components/responses/304"
         403:
-          $ref: "#/components/responses/401"
+          $ref: "#/components/responses/403"
         404:
           $ref: "#/components/responses/404"
         429:
@@ -238,7 +238,7 @@ components:
           $ref: '#/components/headers/Expires'
         Last-modified:
           $ref: '#/components/headers/Last-modified'
-    '401':
+    '403':
       description: No API key was provided, or the provided API key is invalid.
       headers:
         Content-encoding:
