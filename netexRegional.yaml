@@ -17,7 +17,7 @@ servers:
   - url: https://opendata.samtrafiken.se/
 tags:
   - name: NeTEx
-    description: Fetch a NeTEx dataset
+    description: Fetch NeTEx datasets for Swedish public transport operators.
     externalDocs:
       description: Find out more
       url: https://docs.trafiklab.se/public-transport-data/our-data-and-apis/netex

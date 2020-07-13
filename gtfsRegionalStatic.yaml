@@ -17,7 +17,7 @@ servers:
   - url: https://opendata.samtrafiken.se/
 tags:
   - name: GTFS
-    description: Fetch a GTFS dataset
+    description: "Fetch GTFS datasets for Swedish public transport agencies. These GTFS datasets contain data of a higher quality compared to the GTFS Sverige 2 feed."
     externalDocs:
       description: Find out more
       url: https://docs.trafiklab.se/public-transport-data/our-data-and-apis/gtfs/gtfs-regional

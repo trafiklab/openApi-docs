@@ -17,7 +17,7 @@ servers:
   - url: https://opendata.samtrafiken.se/
 tags:
   - name: GTFS-RT
-    description: Fetch GTFS-RT data
+    description: "Fetch GTFS-Realtime files for Swedish public transport operators. GTFS-Realtime is used together with static GTFS files to provide realtime data, including even vehicle GPS positions for certain operators."
     externalDocs:
       description: Find out more
       url: https://docs.trafiklab.se/public-transport-data/our-data-and-apis/gtfs/gtfs-regional
@@ -30,7 +30,7 @@ paths:
       description: 'GTFS-RT ServiceAlerts feeds can be obtained through this endpoint. The interval between two file updates is at least 15 seconds.'
       operationId: fetchServiceAlerts
       parameters:
-        - $ref: '#/components/parameters/Operator'
+        - $ref: '#/components/parameters/Operator-rt'
         - $ref: '#/components/parameters/Accept-encoding'
         - $ref: '#/components/parameters/If-Modified-Since'
         - $ref: '#/components/parameters/If-None-Match'
@@ -55,7 +55,7 @@ paths:
       description: 'GTFS-RT TripUpdates feeds can be obtained through this endpoint. The interval between two file updates is at least 15 seconds.'
       operationId: fetchTripUpdates
       parameters:
-        - $ref: '#/components/parameters/Operator'
+        - $ref: '#/components/parameters/Operator-rt'
         - $ref: '#/components/parameters/Accept-encoding'
         - $ref: '#/components/parameters/If-Modified-Since'
         - $ref: '#/components/parameters/If-None-Match'
@@ -80,7 +80,7 @@ paths:
       description: 'GTFS-RT VehiclePositions feeds can be obtained through this endpoint. The interval between two file updates is at least 3 seconds.'
       operationId: fetchVehiclePositions
       parameters:
-        - $ref: '#/components/parameters/Operator'
+        - $ref: '#/components/parameters/Operator-positions'
         - $ref: '#/components/parameters/Accept-encoding'
         - $ref: '#/components/parameters/If-Modified-Since'
         - $ref: '#/components/parameters/If-None-Match'
@@ -101,7 +101,7 @@ paths:
 
 components:
   parameters:
-    Operator:
+    Operator-rt:
       in: path
       name: operator
       required: true
@@ -110,22 +110,12 @@ components:
         enum:
           - sl
           - ul
-          - sormland
           - otraf
-          - krono
           - klt
-          - gotland
-          - blekinge
           - skane
-          - halland
-          - vt
           - varm
-          - orebro
-          - vl
           - dt
           - xt
-          - dintur
-          - sj
       description: The operator id.
       examples:
         sl:
@@ -134,55 +124,61 @@ components:
         ul:
           value: ul
           description: UL
-        sormland:
-          value: sormland
-          description: Sörmlandstrafiken
         otraf:
           value: otraf
           description: Östgötatrafiken
-        krono:
-          value: krono
-          description: Länstrafik Kronoberg
         klt:
           value: klt
           description: Kalmar Länstrafik
-        gotland:
-          value: gotland
-          description: Gotland
-        blekinge:
-          value: blekinge
-          description: Blekingetrafiken
         skane:
           value: skane
           description: Skånetrafiken
-        halland:
-          value: halland
-          description: Hallandstrafiken
-        vt:
-          value: vt
-          description: Västtrafik
-        vl:
-          value: vl
-          description: Västmanland
         dt:
           value: dt
           description: Dalatrafiken
         varm:
           value: varm
           description: Värmlandstrafiken och Karlstadsbuss
-        orebro:
-          value: orebro
-          description: Örebro
         xt:
           value: xt
           description: X-trafik
-        dintur:
-          value: dintur
-          description: DinTur (Västernorrland)
-        sj:
-          value: sj
-          description: SJ, Snälltåget och Tågab
-
+    Operator-positions:
+      in: path
+      name: operator
+      required: true
+      schema:
+        type: string
+        enum:
+          - ul
+          - otraf
+          - klt
+          - skane
+          - varm
+          - dt
+          - xt
+      description: The operator id.
+      examples:
+        ul:
+          value: ul
+          description: UL
+        otraf:
+          value: otraf
+          description: Östgötatrafiken
+        klt:
+          value: klt
+          description: Kalmar Länstrafik
+        skane:
+          value: skane
+          description: Skånetrafiken
+        dt:
+          value: dt
+          description: Dalatrafiken
+        varm:
+          value: varm
+          description: Värmlandstrafiken och Karlstadsbuss
+        xt:
+          value: xt
+          description: X-trafik
     Accept-encoding:
       name: Accept-encoding
       in: header
