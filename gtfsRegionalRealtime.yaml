@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   title: GTFS Regional Realtime
-  description: 'This API provides realtime GTFS data of high quality for Swedish public transport operators.'
+  description: 'This API provides realtime GTFS data of high quality for Swedish public transport operators. The data is provided by Samtrafiken. All endpoints support HEAD requests and conditional GET requests. You can use these to determine if a new file is available.'
   contact:
     name: Trafiklab.se
     url: https://support.trafiklab.se
@@ -27,7 +27,7 @@ paths:
       tags:
         - GTFS-RT
       summary: 'Obtain the latest GTFS-RT ServiceAlerts for an operator.'
-      description: 'GTFS-RT ServiceAlerts feeds can be obtained through this endpoint. Files are updated every 15 seconds. You can check if a new file is available through HEAD requests or conditional (GET) requests, or based on the response headers.'
+      description: 'GTFS-RT ServiceAlerts feeds can be obtained through this endpoint. The interval between two file updates is at least 15 seconds.'
       operationId: fetchServiceAlerts
       parameters:
         - $ref: '#/components/parameters/Operator'
@@ -52,7 +52,7 @@ paths:
       tags:
         - GTFS-RT
       summary: 'Obtain the latest GTFS-RT TripUpdates for an operator.'
-      description: 'GTFS-RT TripUpdates feeds can be obtained through this endpoint. Files are updated every 15 seconds. You can check if a new file is available through HEAD requests or conditional (GET) requests, or based on the response headers.'
+      description: 'GTFS-RT TripUpdates feeds can be obtained through this endpoint. The interval between two file updates is at least 15 seconds.'
       operationId: fetchTripUpdates
       parameters:
         - $ref: '#/components/parameters/Operator'
@@ -77,7 +77,7 @@ paths:
       tags:
         - GTFS-RT
       summary: 'Obtain the latest GTFS-RT VehiclePositions for an operator.'
-      description: 'GTFS-RT VehiclePositions feeds can be obtained through this endpoint. Files are updated every 3 seconds. You can check if a new file is available through HEAD requests or conditional (GET) requests, or based on the response headers.'
+      description: 'GTFS-RT VehiclePositions feeds can be obtained through this endpoint. The interval between two file updates is at least 3 seconds.'
       operationId: fetchVehiclePositions
       parameters:
         - $ref: '#/components/parameters/Operator'
@@ -107,17 +107,82 @@ components:
       required: true
       schema:
         type: string
-      description: The operator id
+        enum:
+          - sl
+          - ul
+          - sormland
+          - otraf
+          - krono
+          - klt
+          - gotland
+          - blekinge
+          - skane
+          - halland
+          - vt
+          - varm
+          - orebro
+          - vl
+          - dt
+          - xt
+          - dintur
+          - sj
+      description: The operator id.
       examples:
         sl:
           value: sl
           description: SL
-        skane:
-          value: skane
-          description: Skånetrafiken
+        ul:
+          value: ul
+          description: UL
+        sormland:
+          value: sormland
+          description: Sörmlandstrafiken
         otraf:
           value: otraf
           description: Östgötatrafiken
+        krono:
+          value: krono
+          description: Länstrafik Kronoberg
+        klt:
+          value: klt
+          description: Kalmar Länstrafik
+        gotland:
+          value: gotland
+          description: Gotland
+        blekinge:
+          value: blekinge
+          description: Blekingetrafiken
+        skane:
+          value: skane
+          description: Skånetrafiken
+        halland:
+          value: halland
+          description: Hallandstrafiken
+        vt:
+          value: vt
+          description: Västtrafik
+        vl:
+          value: vl
+          description: Västmanland
+        dt:
+          value: dt
+          description: Dalatrafiken
+        varm:
+          value: varm
+          description: Värmlandstrafiken och Karlstadsbuss
+        orebro:
+          value: orebro
+          description: Örebro
+        xt:
+          value: xt
+          description: X-trafik
+        dintur:
+          value: dintur
+          description: DinTur (Västernorrland)
+        sj:
+          value: sj
+          description: SJ, Snälltåget och Tågab
+
     Accept-encoding:
       name: Accept-encoding
       in: header
@@ -185,26 +250,6 @@ components:
       example: 'Mon, 13 Jul 2020 04:24:36 GMT'
 
   responses:
-    '200-zip':
-      description: The request succeeded.
-      headers:
-        Cache-control:
-          $ref: '#/components/headers/Cache-control'
-        Content-encoding:
-          $ref: '#/components/headers/Content-encoding'
-        Date:
-          $ref: '#/components/headers/Date'
-        ETag:
-          $ref: '#/components/headers/ETag'
-        Expires:
-          $ref: '#/components/headers/Expires'
-        Last-modified:
-          $ref: '#/components/headers/Last-modified'
-      content:
-        application/zip:
-          schema:
-            type: string
-            format: binary
     '200-pb':
       description: The request succeeded.
       headers:

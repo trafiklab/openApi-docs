@@ -85,17 +85,82 @@ components:
       required: true
       schema:
         type: string
-      description: The operator id
+        enum:
+          - sl
+          - ul
+          - sormland
+          - otraf
+          - krono
+          - klt
+          - gotland
+          - blekinge
+          - skane
+          - halland
+          - vt
+          - varm
+          - orebro
+          - vl
+          - dt
+          - xt
+          - dintur
+          - sj
+      description: The operator id.
       examples:
         sl:
           value: sl
           description: SL
-        skane:
-          value: skane
-          description: Skånetrafiken
+        ul:
+          value: ul
+          description: UL
+        sormland:
+          value: sormland
+          description: Sörmlandstrafiken
         otraf:
           value: otraf
           description: Östgötatrafiken
+        krono:
+          value: krono
+          description: Länstrafik Kronoberg
+        klt:
+          value: klt
+          description: Kalmar Länstrafik
+        gotland:
+          value: gotland
+          description: Gotland
+        blekinge:
+          value: blekinge
+          description: Blekingetrafiken
+        skane:
+          value: skane
+          description: Skånetrafiken
+        halland:
+          value: halland
+          description: Hallandstrafiken
+        vt:
+          value: vt
+          description: Västtrafik
+        vl:
+          value: vl
+          description: Västmanland
+        dt:
+          value: dt
+          description: Dalatrafiken
+        varm:
+          value: varm
+          description: Värmlandstrafiken och Karlstadsbuss
+        orebro:
+          value: orebro
+          description: Örebro
+        xt:
+          value: xt
+          description: X-trafik
+        dintur:
+          value: dintur
+          description: DinTur (Västernorrland)
+        sj:
+          value: sj
+          description: SJ, Snälltåget och Tågab
+
     Accept-encoding:
       name: Accept-encoding
       in: header
@@ -180,26 +245,6 @@ components:
           $ref: '#/components/headers/Last-modified'
       content:
         application/zip:
-          schema:
-            type: string
-            format: binary
-    '200-pb':
-      description: The request succeeded.
-      headers:
-        Cache-control:
-          $ref: '#/components/headers/Cache-control'
-        Content-encoding:
-          $ref: '#/components/headers/Content-encoding'
-        Date:
-          $ref: '#/components/headers/Date'
-        ETag:
-          $ref: '#/components/headers/ETag'
-        Expires:
-          $ref: '#/components/headers/Expires'
-        Last-modified:
-          $ref: '#/components/headers/Last-modified'
-      content:
-        application/octet-stream:
           schema:
             type: string
             format: binary
