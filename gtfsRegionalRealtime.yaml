@@ -1,0 +1,292 @@
+openapi: 3.0.1
+
+info:
+  title: GTFS Regional Realtime
+  description: 'This API provides realtime GTFS data of high quality for Swedish public transport operators.'
+  contact:
+    name: Trafiklab.se
+    url: https://support.trafiklab.se
+  license:
+    name: This documentation is licensed under a CC4.0-BY-SA license.
+    url: https://creativecommons.org/licenses/by-sa/4.0/
+  version: 1.0.0
+externalDocs:
+  description: Read the complete Trafiklab docs
+  url: https://docs.trafiklab.se
+servers:
+  - url: https://opendata.samtrafiken.se/
+tags:
+  - name: GTFS-RT
+    description: Fetch GTFS-RT data
+    externalDocs:
+      description: Find out more
+      url: https://docs.trafiklab.se/public-transport-data/our-data-and-apis/gtfs/gtfs-regional
+paths:
+  /gtfs-rt/{operator}/ServiceAlerts.pb:
+    get:
+      tags:
+        - GTFS-RT
+      summary: 'Obtain the latest GTFS-RT ServiceAlerts for an operator.'
+      description: 'GTFS-RT ServiceAlerts feeds can be obtained through this endpoint. Files are updated every 15 seconds. You can check if a new file is available through HEAD requests or conditional (GET) requests, or based on the response headers.'
+      operationId: fetchServiceAlerts
+      parameters:
+        - $ref: '#/components/parameters/Operator'
+        - $ref: '#/components/parameters/Accept-encoding'
+        - $ref: '#/components/parameters/If-Modified-Since'
+        - $ref: '#/components/parameters/If-None-Match'
+      responses:
+        200:
+          $ref: "#/components/responses/200-pb"
+        304:
+          $ref: "#/components/responses/304"
+        403:
+          $ref: "#/components/responses/401"
+        404:
+          $ref: "#/components/responses/404"
+        429:
+          $ref: "#/components/responses/429"
+      security:
+        - api_key: []
+  /gtfs-rt/{operator}/TripUpdates.pb:
+    get:
+      tags:
+        - GTFS-RT
+      summary: 'Obtain the latest GTFS-RT TripUpdates for an operator.'
+      description: 'GTFS-RT TripUpdates feeds can be obtained through this endpoint. Files are updated every 15 seconds. You can check if a new file is available through HEAD requests or conditional (GET) requests, or based on the response headers.'
+      operationId: fetchTripUpdates
+      parameters:
+        - $ref: '#/components/parameters/Operator'
+        - $ref: '#/components/parameters/Accept-encoding'
+        - $ref: '#/components/parameters/If-Modified-Since'
+        - $ref: '#/components/parameters/If-None-Match'
+      responses:
+        200:
+          $ref: "#/components/responses/200-pb"
+        304:
+          $ref: "#/components/responses/304"
+        403:
+          $ref: "#/components/responses/401"
+        404:
+          $ref: "#/components/responses/404"
+        429:
+          $ref: "#/components/responses/429"
+      security:
+        - api_key: []
+  /gtfs-rt/{operator}/VehiclePositions.pb:
+    get:
+      tags:
+        - GTFS-RT
+      summary: 'Obtain the latest GTFS-RT VehiclePositions for an operator.'
+      description: 'GTFS-RT VehiclePositions feeds can be obtained through this endpoint. Files are updated every 3 seconds. You can check if a new file is available through HEAD requests or conditional (GET) requests, or based on the response headers.'
+      operationId: fetchVehiclePositions
+      parameters:
+        - $ref: '#/components/parameters/Operator'
+        - $ref: '#/components/parameters/Accept-encoding'
+        - $ref: '#/components/parameters/If-Modified-Since'
+        - $ref: '#/components/parameters/If-None-Match'
+      responses:
+        200:
+          $ref: "#/components/responses/200-pb"
+        304:
+          $ref: "#/components/responses/304"
+        403:
+          $ref: "#/components/responses/401"
+        404:
+          $ref: "#/components/responses/404"
+        429:
+          $ref: "#/components/responses/429"
+      security:
+        - api_key: []
+
+
+components:
+  parameters:
+    Operator:
+      in: path
+      name: operator
+      required: true
+      schema:
+        type: string
+      description: The operator id
+      examples:
+        sl:
+          value: sl
+          description: SL
+        skane:
+          value: skane
+          description: Skånetrafiken
+        otraf:
+          value: otraf
+          description: Östgötatrafiken
+    Accept-encoding:
+      name: Accept-encoding
+      in: header
+      description: "The Accept-Encoding request HTTP header advertises which content encoding, usually a compression algorithm, the client is able to understand.
+         Using content negotiation, the server selects one of the proposals, uses it and informs the client of its choice with the Content-Encoding response header.
+         *This API requires client-side GZIP support.*
+         Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-encoding"
+      schema:
+        type: string
+      example: 'br, gzip, deflate'
+      required: true
+    If-Modified-Since:
+      name: If-Modified-Since
+      in: header
+      schema:
+        $ref: '#/components/schemas/http-date'
+      required: false
+      description: "The If-Modified-Since request HTTP header makes the request conditional: the server will send back the requested resource, with a 200 status, only if it has been last modified after the given date.
+          If the request has not been modified since, the response will be a 304 without any body; the Last-Modified response header of a previous request will contain the date of last modification. Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since"
+    If-None-Match:
+      name: If-None-Match
+      in: header
+      description: "The If-None-Match HTTP request header makes the request conditional. For GET and HEAD methods, the server will send back the requested resource, with a 200 status, only if it doesn't have an ETag matching the given ones.
+         When the condition fails for GET and HEAD methods, then the server must return HTTP status code 304 (Not Modified). Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-None-Match"
+      schema:
+        type: string
+      example: '"bfc13a64729c4290ef5b2c2730249c88ca92d82d"'
+      required: false
+
+  headers:
+    Cache-control:
+      description: "The cache-control contains a max-age field to define how long the content is considered fresh, in seconds, relative to the request time. New data will only become available after this interval has expired. Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/cache-control"
+      schema:
+        type: string
+      example: 'public, max-age=65844'
+
+    Content-encoding:
+      description: "The Content-Encoding entity header is used to compress the media-type. When present, its value indicates which encodings were applied to the entity-body. It lets the client know how to decode in order to obtain the media-type referenced by the Content-Type header. Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding"
+      schema:
+        type: string
+      example: "gzip"
+
+    Date:
+      description: "The Date general HTTP header contains the date and time at which the message was originated. It gives information about an HTTP message, not about the contents of the message. Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Date"
+      schema:
+        $ref: '#/components/schemas/http-date'
+      example: 'Mon, 13 Jul 2020 10:07:12 GMT'
+
+    ETag:
+      description: "The etag header contains a fingerpring of the file contents. It can be used in combination with the If-None-Match request header to only fetch the file when it has changed. Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/ETag"
+      schema:
+        type: string
+      example: '"046c1da6f11e08a6f32c22838787b950"'
+
+    Expires:
+      description: "The Expires header contains the date/time after which the response is considered stale. Invalid dates, like the value 0, represent a date in the past and mean that the resource is already expired. A stale resource can still be used, but a newer version might be available on the server. Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires"
+      schema:
+        $ref: '#/components/schemas/http-date'
+      example: 'Tue, 14 Jul 2020 04:24:36 GMT'
+
+    Last-modified:
+      description: "The Last-Modified response HTTP header contains the date and time at which the origin server believes the resource was last modified. It is used in combination with the if-modified-since request header to determine if the server has newer data compared to the client. Read more: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/last-modified"
+      schema:
+        $ref: '#/components/schemas/http-date'
+      example: 'Mon, 13 Jul 2020 04:24:36 GMT'
+
+  responses:
+    '200-zip':
+      description: The request succeeded.
+      headers:
+        Cache-control:
+          $ref: '#/components/headers/Cache-control'
+        Content-encoding:
+          $ref: '#/components/headers/Content-encoding'
+        Date:
+          $ref: '#/components/headers/Date'
+        ETag:
+          $ref: '#/components/headers/ETag'
+        Expires:
+          $ref: '#/components/headers/Expires'
+        Last-modified:
+          $ref: '#/components/headers/Last-modified'
+      content:
+        application/zip:
+          schema:
+            type: string
+            format: binary
+    '200-pb':
+      description: The request succeeded.
+      headers:
+        Cache-control:
+          $ref: '#/components/headers/Cache-control'
+        Content-encoding:
+          $ref: '#/components/headers/Content-encoding'
+        Date:
+          $ref: '#/components/headers/Date'
+        ETag:
+          $ref: '#/components/headers/ETag'
+        Expires:
+          $ref: '#/components/headers/Expires'
+        Last-modified:
+          $ref: '#/components/headers/Last-modified'
+      content:
+        application/octet-stream:
+          schema:
+            type: string
+            format: binary
+    '304':
+      description: The data on the server has not been modified.
+      headers:
+        Cache-control:
+          $ref: '#/components/headers/Cache-control'
+        Content-encoding:
+          $ref: '#/components/headers/Content-encoding'
+        Date:
+          $ref: '#/components/headers/Date'
+        ETag:
+          $ref: '#/components/headers/ETag'
+        Expires:
+          $ref: '#/components/headers/Expires'
+        Last-modified:
+          $ref: '#/components/headers/Last-modified'
+    '401':
+      description: No API key was provided, or the provided API key is invalid.
+      headers:
+        Content-encoding:
+          $ref: '#/components/headers/Content-encoding'
+        Date:
+          $ref: '#/components/headers/Date'
+        content:
+          $ref: '#/components/schemas/json-error-details'
+    '404':
+      description: The requested file does not exist.
+      headers:
+        Content-encoding:
+          $ref: '#/components/headers/Content-encoding'
+        Date:
+          $ref: '#/components/headers/Date'
+        content:
+          $ref: '#/components/schemas/json-error-details'
+    '429':
+      description: The provided API key has exceeded its quota
+      headers:
+        Content-encoding:
+          $ref: '#/components/headers/Content-encoding'
+        Date:
+          $ref: '#/components/headers/Date'
+        content:
+          $ref: '#/components/schemas/json-error-details'
+
+  schemas:
+    http-date:
+      title: "HTTP Date, RFC2616"
+      type: string
+      format: '<day-name>, <day> <month> <year> <hour>:<minute>:<second> GMT'
+      example: 'Mon, 13 Jul 2020 04:24:36 GMT'
+      description: "HTTP date, see RFC2616 section 3.3: https://tools.ietf.org/html/rfc2616"
+    json-error-details:
+      title: "JSON error message"
+      type: object
+      example: '{"errorMessage":"Key \"123456\" is invalid"}'
+      properties:
+        errorMessage:
+          type: string
+          description: The error message.
+          example: "Key \"123456\" is invalid"
+
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: key
+      in: query
