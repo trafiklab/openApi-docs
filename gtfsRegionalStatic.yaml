@@ -53,7 +53,7 @@ paths:
         - GTFS
       summary: 'Obtain extra files with mappings for the GTFS feed.'
       description: "Extra files contain additional mappings, useful for mapping GTFS data to the internal data in the operator's database. These files are meant to help developers who are working together with the operator."
-      operationId: fetchGtfsArchive
+      operationId: fetchGtfsExtraFile
       parameters:
         - $ref: '#/components/parameters/Operator'
         - $ref: '#/components/parameters/Accept-encoding'
