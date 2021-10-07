@@ -1,0 +1,1387 @@
+openapi: 3.0.1
+info:
+  title: ResRobot APIs v2.1
+  description: 'This collection of APIs allows to plan journeys using one or more of the public transport operators in Sweden. The API offers the functionality behind [ResRobot](https://resrobot.se) and includes train, bus, tram, subway for entire Sweden.'
+  contact:
+    name: support.trafiklab.se
+    url: https://support.trafiklab.se
+  license:
+    name: This documentation is licensed under a CC4.0-BY-SA license.
+    url: https://creativecommons.org/licenses/by-sa/4.0/
+  termsOfService: https://swagger.io/terms/
+  version: 1.0.0
+externalDocs:
+  description: Read the complete Trafiklab docs
+  url: https://trafiklab.se
+servers:
+- url: https://api.resrobot.se/v2/
+tags:
+- name: Routeplanning
+  description: Plan a trip
+  externalDocs:
+    description: Find out more
+    url: https://www.trafiklab.se/api/resrobot-reseplanerare/dokumentation/sokresa
+- name: Station lookup
+  description: Lookup stations
+  externalDocs:
+    description: Find out more
+    url: https://www.trafiklab.se/api/resrobot-reseplanerare/platsuppslag
+- name: Timetables
+  description: Retrieve departures or arrivals
+  externalDocs:
+    description: Find out more
+    url: https://www.trafiklab.se/node/14076
+paths:
+  /location.name:
+    get:
+      tags:
+      - Station lookup
+      summary: 'Use this method to search for stations and stops based on a name.'
+      description: 'Use this method to search for stations and stops based on a name. You can search for stations for both departures and arrival of a call. The stations found can then be presented to a user so that they can choose exactly which station they want to travel to or from. This method is not designed to be used for auto-complete solutions where a search is done while the user enters the name of a station. If you wish to use autocomplete, or if you want to provide your users with **the best experience**, please use the **GTFS Sverige 2 stops.txt** file as an offline database.
+        <h3>Order of the results</h3>
+        <p>The results are ordered by station “weight”, where stations with more weight are shown higher in the list. Each station or stop is assigned a weight value which indicates how “busy” this station is. The higher the value, the more “busy” the station is. The calculation is based on the product classes. For each product class operating at this stop, the frequency how often this product class operates is rated between 0 and 3 where 0 means this product isn’t operating and 3 means that this product operates at a high frequency. Then an individual weight is calculated for product class by multiplying the frequency rating with a certain factor. These factors take into account that traffic by trains for example weighs higher than traffic by busses. The weight for the station is then the sum over all individual weights for each product class.</p>'
+      operationId: lookupStationName
+      parameters:
+      - name: input
+        in: query
+        description: 'The name, or a part of the name, of the station that should be looked up. <p>By default, the system will search for results with a 100% match between the search string and results. For example, when searching for "stock" it will only return results which contain "stock" somewhere in their name. However, in many cases it may be of interest to see the other results which may not represent a 100% match but are still quite close. To enable this output, add a question mark “?” at the end of the input string. Then the service will also return the other, non-100% matching results up to the specified maximum number of results. For example, "Mälarsjukhus?" will also return "Mälarparksvägen" because of the partial match, but would not be included without the question mark in the query.
+          <p>This name should be [URL-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding).</p>'
+        required: true
+        style: form
+        schema:
+            type: string
+      - name: maxNo
+        in: query
+        description: 'The maximum number of results to return.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            default: 10
+            maximum: 50
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+            type: string
+            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+            default: sv
+      - name: format
+        in: query
+        description: 'The format in which the response will be sent.'
+        required: false
+        style: form
+        schema:
+            type: string
+            enum: [json, xml]
+            default: xml
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StopLookupResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/StopLookupResponse'
+      security:
+        - api_key_routeplanner: []
+  /location.nearbystops:
+    get:
+      tags:
+      - Station lookup
+      summary: 'Use this method to search for stations and stops nearby a given location.'
+      description: 'Use this method to find stations and stops within a certain distance of given coordinates. Submit the central coordinates and the radius to search in order to retrieve a list of nearby stops, including the type of traffic (train, bus, etc.). Coordinates should be given in WGS84 format (EPSG:4326).
+      <h4>Privacy</h4>
+      <p>The location of a person is personal data according to the European General Data Protection Regulation (GDPR). This means you are required to obtain permission from users before using this data. You are also required to take measures to protect this personal data. This means you should not log it, and you should always use HTTPS connections. If a secure HTTPS connection is not possible, the client should not transmit coordinates.</p>'
+      operationId: lookupStationByLocation
+      parameters:
+      - name: originCoordLat
+        in: query
+        description: The latitude (easting, y-coordinate) of the location where you want to search, in degrees.
+        required: true
+        style: form
+        schema:
+            type: number
+            minimum: -180
+            maximum: 180
+      - name: originCoordLon
+        in: query
+        description: The longitude (northing, x-coordinate) of the location where you want to search, in degrees.
+        required: true
+        style: form
+        schema:
+            type: number
+            minimum: -180
+            maximum: 180
+      - name: r
+        in: query
+        description: 'The radius that should be searched, in meters.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            default: 1000
+            maximum: 10000
+      - name: maxNo
+        in: query
+        description: 'The maximum number of results that should be returned.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            default: 10
+            maximum: 1000
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+            type: string
+            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+            default: sv
+      - name: format
+        in: query
+        description: 'The format in which the response will be sent.'
+        required: false
+        style: form
+        schema:
+            type: string
+            enum: [json, xml]
+            default: xml
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StopLookupResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/StopLookupResponse'
+      security:
+        - api_key_routeplanner: []
+  /trip:
+    get:
+      tags:
+      - Routeplanning
+      summary: Get a route between 2 points in Sweden using all forms of public transport.
+      operationId: getTrip
+      parameters:
+      - name: originId
+        in: query
+        description: The 9-digit stop ID for the origin of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2.
+        required: true
+        style: form
+        schema:
+          type: integer
+          format: int64
+          pattern: '^\d{9}$'
+      - name: destId
+        in: query
+        description: The 9-digit stop ID for the destination of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2.
+        required: true
+        style: form
+        schema:
+            type: integer
+            format: int64
+            pattern: '^\d{9}$'
+      - name: originCoordLat
+        in: query
+        required: false
+        description: "The latitude of the starting location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, originId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for originId."
+        style: form
+        schema:
+          type: number
+          format: double
+      - name: originCoordLong
+        in: query
+        required: false
+        description: "The longitude of the starting location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, originId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for originId."
+        style: form
+        schema:
+          type: number
+          format: double
+      - name: destCoordLat
+        in: query
+        required: false
+        description: "The latitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
+        style: form
+        schema:
+          type: number
+          format: double
+      - name: destCoordLong
+        in: query
+        required: false
+        description: "The longitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
+        style: form
+        schema:
+          type: number
+          format: double
+      - name: date
+        in: query
+        description: 'The date on which the journey should depart or arrive. Formatted as YYYY-MM-DD. When unspecified, the current date is used.'
+        required: false
+        style: form
+        schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+            default:
+      - name: time
+        in: query
+        description: 'The time at which the journey should depart or arrive. Formatted as HH:mm. When unspecified, the current time is used.'
+        required: false
+        style: form
+        schema:
+            type: string
+            format: time
+            pattern: '^\d{2}:\d{2}$'
+            default:
+      - name: searchForArrival
+        in: query
+        description: 'Whether you want to specify the departure or arrival date and time. Setting this value to 1 will search for trips arriving at the specified time, setting it to 0 will search for trips departing at the specified time.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            format: int32
+            enum: [0,1]
+            default: 0
+      - name: viaId
+        in: query
+        description: '9-Digit id of a via station through which the journey should be planned. This id can be determined in the same ways as origin or destination ids.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            format: int64
+            pattern: '^\d{9}$'
+      - name: viaWaitTime
+        in: query
+        description: 'Defines the minimum waiting time spent at the specified via station in minutes. This field is used in combination with viaId'
+        required: false
+        style: form
+        schema:
+            type: integer
+            format: int64
+            minimum: 0
+            default: 0
+      - name: context
+        in: query
+        description: 'Defines the starting point for the scroll back or forth operation. Use the <strong>scrB</strong> value from a previous result to scroll backwards in time and use the <strong>scrF</strong> value to scroll forth.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            format: int64
+      - name: numF
+        in: query
+        description: 'The minimum number of journeys, taking place _before_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            format: int64
+            default: 4
+      - name: numB
+        in: query
+        description: 'The nminimum number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested. Searching backwards can significantly slow down your request.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            format: int64
+            default: 1
+      - name: maxChange
+        in: query
+        description: The maximum number of changes in the journey.
+        required: false
+        style: form
+        schema:
+          minimum: 1
+          maximum: 11
+          default: 11
+          type: integer
+          format: int32
+      - name: minChangeTime
+        in: query
+        description: The minumum change time at transfer stations, in minutes.
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int32
+      - name: maxChangeTime
+        in: query
+        description: The maximum change time at transfer stations, in minutes.
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int32
+      - name: changeTimePercent
+        in: query
+        required: false
+        description: 'Configures the walking speed when changing from one leg of the journey to the next one.
+        It extends the time required for changes by a specified percentage. A value of 200 doubles the change time
+        as initially calculated by the system.'
+        style: form
+        schema:
+          minimum: 0
+          maximum: 500
+          default: 100
+          type: integer
+          format: int32
+      - name: products
+        in: query
+        description: 'The transport modes which are allowed in the journey.<br>
+        This field is calculated by taking the sum of the modes you want to include:
+        <ul>
+          <li> 2: High-speed and express trains</li>
+          <li> 4: Regional and InterCity trains</li>
+          <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+          <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
+          <li> 32: Subways</li>
+          <li> 64: Trams and light rail</li>
+          <li> 128: Local busses</li>
+          <li> 256: Ferries, boats and cruises</li>
+          <li> 512: Taxi</li>
+        </ul>'
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int32
+      - name: operators
+        in: query
+        description: "Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id. Theses ids can be found in the 'GTFS Sverige 2' agencies.txt file. Multiple operators can be specified by concatenating their ids with a comma ',' as separation."
+        required: false
+        style: form
+        schema:
+          type: array
+          format: csv
+          items:
+            type: integer
+            format: int32
+      - name: poly
+        in: query
+        description: Enables/disables the calculation of the polyline for each leg of the trip. This polyline visualises the exact route on a map.
+        schema:
+            type: integer
+            format: int32
+            enum: [0,1]
+            default: 0
+      - name: passList
+        in: query
+        description: Enables/disables the return of the passlist for each leg of the trip. A passlist is a list of all stops where the traveller passes without changing.
+        schema:
+            type: integer
+            format: int32
+            enum: [0,1]
+            default: 0
+      - name: origWalk
+        in: query
+        description: "Enables/disables using footpaths in the beginning of a trip when searching from an address. To fine-tune the minimum and/or maximum distance to the next public transport station, provide the following values separted by comma:
+        <ul>
+          <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
+          <li>The minimum walking distance (in meters)
+          <li>The maximum walking distance (in meters)
+        </ul>
+        <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter originWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
+        schema:
+          type: array
+          format: csv
+          items:
+            type: integer
+            format: int32
+      - name: destWalk
+        in: query
+        description:  "Enables/disables using footpaths in the end of a trip when searching to an address. To fine-tune the minimum and/or maximum distance to the next public transport station, provide the following values separted by comma:
+        <ul>
+          <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
+          <li>The minimum walking distance (in meters)
+          <li>The maximum walking distance (in meters)
+        </ul>
+        <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter destWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
+        schema:
+          type: array
+          format: csv
+          items:
+            type: integer
+            format: int32
+      - name: unsharp
+        in: query
+        description: If the unsharp search mode is requested, the algorithm will take additional stations nearby the given start and destination station into account. This can help when searching from a small bus stop, in which case it might be more interesting to walk a few hundred meters to a bus stop with more traffic.
+        schema:
+          type: integer
+          format: int32
+          enum: [0, 1]
+          default: 0
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+            type: string
+            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+            default: sv
+      - name: format
+        in: query
+        description: Whether or not to include the list of stations which are passed on this journey.
+        schema:
+          type: string
+          enum: [json, xml]
+          default: xml
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JourneyPlannerResult'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/JourneyPlannerResult'
+        400:
+          description: Invalid Location ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationMissingException'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LocationMissingException'
+      security:
+      - api_key_routeplanner: []
+  /departureBoard:
+    get:
+      tags:
+      - Timetables
+      summary: Get departures at a stoplocation
+      operationId: getDepartureBoard
+      description: 'This method will return the next departures from a given point in time.<h3>Scrolling</h3><p>To scroll station boards, following action is to be performed: Take the departure time of the last departure of your result. Add one minute and do the same request with the new time value again. If the response passes midnight, the date has to be incremented too.</p>'
+      parameters:
+      - name: id
+        in: query
+        description: 'Specifies the station/stop ID for which the departures shall be retrieved. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2.'
+        required: true
+        style: form
+        schema:
+          type: integer
+          format: int64
+          pattern: '^\d{9}$'
+      - name: date
+        in: query
+        description: 'The date on which the departures should depart. Formatted as YYYY-MM-DD. Default when not specified: now.'
+        required: false
+        style: form
+        schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+            default: Current server date
+      - name: time
+        in: query
+        description: 'The time whereafter departures should depart. Formatted as HH:mm. Default when not specified: now.'
+        required: false
+        style: form
+        schema:
+            type: string
+            format: time
+            pattern: '^\d{2}:\d{2}$'
+            default: Current server time
+      - name: maxJourneys
+        in: query
+        description: The maximum number of results to return. Note that this is not a hard limit. If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int64
+          default: 25
+      - name: direction
+        in: query
+        description: 'If only vehicles departing or arriving from a certain direction shall be returned, specify the direction by giving the station/stop ID of the last stop on the journey.'
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int64
+          pattern: '^\d{9}$'
+      - name: products
+        in: query
+        description: 'The transport modes which are allowed in the journey.<br>
+        This field is calculated by taking the sum of the modes you want to include:
+        <ul>
+          <li> 2: High-speed and express trains</li>
+          <li> 4: Regional and InterCity trains</li>
+          <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+          <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
+          <li> 32: Subways</li>
+          <li> 64: Trams and light rail</li>
+          <li> 128: Local busses</li>
+          <li> 256: Ferries, boats and cruises</li>
+          <li> 512: Taxi</li>
+        </ul>'
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int32
+      - name: operators
+        in: query
+        description: Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id.
+        required: false
+        style: form
+        schema:
+          type: array
+          format: csv
+          items:
+            type: integer
+            format: int32
+      - name: format
+        in: query
+        description: Whether or not to include the list of stations which are passed on this journey.
+        schema:
+          type: string
+          enum: [json, xml]
+          default: xml
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfDepartures'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ListOfDepartures'
+        400:
+          description: Invalid Location ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationMissingException'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LocationMissingException'
+        404:
+          description: Not found
+          content: {}
+      security:
+      - api_key_timetable: []
+  /arrivalBoard:
+    get:
+      tags:
+      - Timetables
+      summary: Get arrivals at a stoplocation
+      operationId: getArrivalBoard
+      description: 'This method will return the next arrivals from a given point in time.<h3>Scrolling</h3><p>To scroll station boards, following action is to be performed: Take the arrival time of the last arrival of your result. Add one minute and do the same request with the new time value again. If the response passes midnight, the date has to be incremented too.</p>'
+      parameters:
+      - name: id
+        in: query
+        description: 'Specifies the station/stop ID for which the arrivals shall be retrieved. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2.'
+        required: true
+        style: form
+        schema:
+          type: integer
+          format: int64
+      - name: date
+        in: query
+        description: 'The date on which the journey should arrive. Formatted as YYYY-MM-DD. Default when not specified: now.'
+        required: false
+        style: form
+        schema:
+            type: string
+            format: date
+            pattern: '^\d{4}-\d{2}-\d{2}$'
+            default: Current server date
+      - name: time
+        in: query
+        description: 'The time at which the journey should arrive. Formatted as HH:mm. Default when not specified: now.'
+        required: false
+        style: form
+        schema:
+            type: string
+            format: time
+            pattern: '^\d{2}:\d{2}$'
+            default: Current server time
+      - name: maxJourneys
+        in: query
+        description: The maximum number of results to return. Note that this is not a hard limit. If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int64
+          default: 25
+      - name: direction
+        in: query
+        description: 'If only vehicles departing or arriving from a certain direction shall be returned, specify the direction by giving the station/stop ID of the last stop on the journey.'
+        required: true
+        style: form
+        schema:
+          type: integer
+          format: int64
+      - name: products
+        in: query
+        description: 'The transport modes which are allowed in the journey.<br>
+        This field is calculated by taking the sum of the modes you want to include:
+        <ul>
+          <li> 2: High-speed and express trains</li>
+          <li> 4: Regional and InterCity trains</li>
+          <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+          <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
+          <li> 32: Subways</li>
+          <li> 64: Trams and light rail</li>
+          <li> 128: Local busses</li>
+          <li> 256: Ferries, boats and cruises</li>
+          <li> 512: Taxi</li>
+        </ul>'
+        required: false
+        style: form
+        schema:
+          type: integer
+          format: int32
+      - name: operators
+        in: query
+        description: Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id.
+        required: false
+        style: form
+        schema:
+          type: array
+          format: csv
+          items:
+            type: integer
+            format: int32
+      - name: format
+        in: query
+        description: Whether or not to include the list of stations which are passed on this journey.
+        schema:
+          type: string
+          enum: [json, xml]
+          default: xml
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListOfArrivals'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ListOfArrivals'
+        400:
+          description: Invalid Location ID supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationMissingException'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/LocationMissingException'
+        404:
+          description: Not found
+          content: {}
+      security:
+      - api_key_timetable: []
+components:
+  schemas:
+    JourneyPlannerResult:
+      required:
+      - Trip
+      - scrB
+      - scrF
+      type: object
+      properties:
+        Trip:
+          type: array
+          xml:
+            name: Trip
+            wrapped: false
+          items:
+            $ref: '#/components/schemas/Trip'
+        scrB:
+          type: string
+          example: 1|OB|MTµ11µ...
+          description: Context string to search earlier journeys
+        scrF:
+          type: string
+          example: 1|OF|MTµ11µ9...
+          description: Context string to search later journeys
+      xml:
+        name: TripList
+    Trip:
+      required:
+      - LegList
+      - ServiceDays
+      - idx
+      - tripId
+      - ctxRecon
+      - duration
+      type: object
+      properties:
+        ServiceDays:
+          type: array
+          xml:
+            name: ServiceDays
+            wrapped: false
+          items:
+            $ref: '#/components/schemas/ServiceDay'
+        LegList:
+          type: array
+          xml:
+            name: LegList
+            wrapped: false
+          items:
+            $ref: '#/components/schemas/LegList'
+        idx:
+          type: number
+          example: 0
+        tripId:
+          type: string
+          example: C-0
+        ctxRecon:
+          type: string
+          example: T$A=1@O=Örebro Södra station@L=740000361@a=128@$A=1@O=Örebro Centralstation@L=740000133@a=128@$201903261808$201903261817$BLT    1$$1$§T$A=1@O=Örebro Centralstation@L=740000133@a=128@$A=1@O=Stockholm     Cityterminalen@L=740000622@a=128@$201903261835$201903262110$BXB  600$$1$§T$A=1@O=Stockholm Cityterminalen@L=740000622@a=128@$A=1@O=Jönköping Centralstation@L=740000090@a=128@$201903262355$201903270430$BXB N601$$1$§T$A=1@O=Jönköping     Centralstation@L=740000090@a=128@$A=1@O=Nässjö Centralstation@L=740000140@a=128@$201903270510$201903270547$JLT27651$$1$§T$A=1@O=Nässjö Centralstation@L=740000140@a=128@$A=1@O=Växjö     station@L=740000250@a=128@$201903270633$201903270746$JLT17603$$1$§T$A=1@O=Växjö station@L=740000250@a=128@$A=1@O=Lessebo station@L=740000235@a=128@$201903270815$201903270855$BLT  218$$1$
+        duration:
+          type: string
+          example: PT14H47M
+
+    ServiceDay:
+      required:
+      - planningPeriodBegin
+      - planningPeriodEnd
+      - sDaysR
+      - sDaysI
+      - sDaysB
+      type: object
+      properties:
+        planningPeriodBegin:
+          type: string
+          example: "2019-03-22"
+          xml:
+            attribute: true
+        planningPeriodEnd:
+          type: string
+          example: "2019-06-15"
+          xml:
+            attribute: true
+        sDaysR:
+          type: string
+          example: not every day
+          xml:
+            attribute: true
+        sDaysI:
+          type: string
+          example: 26. Mar until 10. Apr 2019 Mo - Th
+          xml:
+            attribute: true
+        sDaysB:
+          type: string
+          example: 1E3C700000000000000000
+          xml:
+            attribute: true
+
+    LegList:
+      required:
+        - Leg
+      properties:
+        Leg:
+          type: array
+          items:
+            $ref: '#/components/schemas/Leg'
+
+    Leg:
+      required:
+        - Origin
+        - Destination
+        - Product
+        - Stops
+        - idx
+        - name
+        - transportNumber
+        - transportCategory
+        - type
+        - reachable
+        - direction
+      type: object
+      properties:
+        Origin:
+          $ref: '#/components/schemas/Origin'
+        Destination:
+          $ref: '#/components/schemas/Destination'
+        Product:
+          $ref: '#/components/schemas/Product'
+        Stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stop'
+        idx:
+          type: string
+          example: 0
+          xml:
+            attribute: true
+        name:
+          type: string
+          example: Länstrafik - Buss 1
+          xml:
+            attribute: true
+        transportNumber:
+          type: string
+          example: 1
+          xml:
+            attribute: true
+        transportCategory:
+          type: string
+          example: BLT
+          xml:
+            attribute: true
+        type:
+          type: string
+          example: JNY
+          xml:
+            attribute: true
+        reachable:
+          type: string
+          example: true
+          xml:
+            attribute: true
+        direction:
+          type: string
+          example: Skiffergatan (Örebro kn)
+          xml:
+            attribute: true
+
+    Origin:
+      required:
+        - name
+        - type
+        - id
+        - extId
+        - lon
+        - lat
+        - routeIdx
+        - time
+        - date
+      type: object
+      properties:
+        name:
+          type: string
+          example: Örebro Södra station
+          xml:
+            attribute: true
+        type:
+          type: string
+          example: ST
+          xml:
+            attribute: true
+        id:
+          type: string
+          example: 740000361
+          xml:
+            attribute: true
+        extId:
+          type: string
+          example: 740000361
+          deprecated: true
+          xml:
+            attribute: true
+        lon:
+          type: number
+          example: 15.202332
+          xml:
+            attribute: true
+        lat:
+          type: number
+          example: 59.269989
+          xml:
+            attribute: true
+        routeIdx:
+          type: integer
+          example: 16
+          xml:
+            attribute: true
+        time:
+          type: string
+          format: time
+          example: "18:08:00"
+          xml:
+            attribute: true
+        date:
+          type: string
+          format: date
+          example: "2019-03-26"
+          xml:
+            attribute: true
+
+    Destination:
+      required:
+        - name
+        - type
+        - id
+        - extId
+        - lon
+        - lat
+        - routeIdx
+        - time
+        - date
+      type: object
+      properties:
+        name:
+          type: string
+          example: Örebro Centralstation
+          xml:
+            attribute: true
+        type:
+          type: string
+          example: ST
+          xml:
+            attribute: true
+        id:
+          type: string
+          example: 740000133
+          deprecated: true
+          xml:
+            attribute: true
+        extId:
+          type: string
+          example: 740000133
+          xml:
+            attribute: true
+        lon:
+          type: number
+          example: 15.211348
+          xml:
+            attribute: true
+        lat:
+          type: number
+          example: 59.278942
+          xml:
+            attribute: true
+        routeIdx:
+          type: integer
+          example: 18
+          xml:
+            attribute: true
+        time:
+          type: string
+          format: time
+          example: "18:17:00"
+          xml:
+            attribute: true
+        date:
+          type: string
+          format: date
+          example: "2019-03-26"
+          xml:
+            attribute: true
+
+    Product:
+      required:
+        - name
+        - num
+        - catCode
+        - catOutS
+        - catOutL
+        - operatorCode
+        - operator
+        - operatorUrl
+      type: object
+      properties:
+        name:
+          type: string
+          example: Länstrafik - Buss 1
+          xml:
+            attribute: true
+        num:
+          type: string
+          example: "1"
+          xml:
+            attribute: true
+        catCode:
+          type: string
+          example: "7"
+          xml:
+            attribute: true
+        catOutS:
+          type: string
+          example: BLT
+          xml:
+            attribute: true
+        catOutL:
+          type: string
+          example: Länstrafik - Buss
+          xml:
+            attribute: true
+        operatorCode:
+          type: string
+          example: 289
+          xml:
+            attribute: true
+        operator:
+          type: string
+          example: Länstrafiken Örebro
+          xml:
+            attribute: true
+        operatorUrl:
+          type: string
+          example: http://www.lanstrafiken.se/orebro
+          xml:
+            attribute: true
+
+    Stop:
+      required:
+        - name
+        - id
+        - extId
+        - lon
+        - lat
+        - routeIdx
+      type: object
+      properties:
+        name:
+          type: string
+          example: Örebro Slottet
+          xml:
+            attribute: true
+        id:
+          type: string
+          example: 740021190
+          deprecated: true
+          xml:
+            attribute: true
+        extId:
+          type: string
+          example: 740021190
+          xml:
+            attribute: true
+        lon:
+          type: number
+          example: 15.214297
+          xml:
+            attribute: true
+        lat:
+          type: number
+          example: 59.274672
+          xml:
+            attribute: true
+        routeIdx:
+          type: integer
+          example: 17
+          xml:
+            attribute: true
+        arrTime:
+          type: string
+          format: time
+          example: "18:12:00"
+          xml:
+            attribute: true
+        arrDate:
+          type: string
+          format: date
+          example: "2019-03-26"
+          xml:
+            attribute: true
+        depTime:
+          type: string
+          format: time
+          example: "18:15:00"
+          xml:
+            attribute: true
+        depDate:
+          type: string
+          format: date
+          example: "2019-03-26"
+          xml:
+            attribute: true
+
+    LocationMissingException:
+      required:
+        - errorCode
+        - errorText
+      type: object
+      properties:
+        errorCode:
+          type: string
+          example: SVC_LOC
+          xml:
+            attribute: true
+        errorText:
+          type: string
+          example: location missing or invalid
+          xml:
+            attribute: true
+      xml:
+        name: Error
+
+    ListOfDepartures:
+      required:
+        - Departure
+      type: object
+      properties:
+        Departure:
+          type: array
+          items:
+            $ref: '#/components/schemas/DepartureBoardEntry'
+      xml:
+        name: DepartureBoard
+
+    ListOfArrivals:
+      required:
+        - Arrival
+      type: object
+      properties:
+        Arrival:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArrivalBoardEntry'
+      xml:
+        name: ArrivalBoard
+
+    DepartureBoardEntry:
+      required:
+        - Product
+        - Stops
+        - name
+        - type
+        - stop
+        - stopId
+        - stopExtId
+        - time
+        - date
+        - direction
+        - transportNumber
+        - transportCategory
+      type: object
+      properties:
+        Stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stop'
+        Product:
+          $ref: '#/components/schemas/Product'
+        name:
+          type: string
+          example: Länstrafik - Spårväg 7
+          xml:
+            attribute: true
+        type:
+          type: string
+          example: S
+          xml:
+            attribute: true
+        stop:
+          type: string
+          example: T-Centralen Spårv (Stockholm kn)
+          xml:
+            attribute: true
+        stopId:
+          type: string
+          example: 740035997
+          deprecated: true
+          xml:
+            attribute: true
+        stopExtId:
+          type: string
+          example: 740021190
+          xml:
+            attribute: true
+        time:
+          type: string
+          format: time
+          example: "10:53:00"
+          xml:
+            attribute: true
+        date:
+          type: string
+          format: date
+          example: "2019-04-15"
+          xml:
+            attribute: true
+        direction:
+          type: string
+          example: Stockholm Waldemarsudde
+          xml:
+            attribute: true
+        transportNumber:
+          type: string
+          example: "7"
+          xml:
+            attribute: true
+        transportCategory:
+          type: string
+          example: SLT
+          xml:
+            attribute: true
+    ArrivalBoardEntry:
+      required:
+        - Product
+        - Stops
+        - name
+        - type
+        - stop
+        - stopId
+        - stopExtId
+        - time
+        - date
+        - direction
+        - transportNumber
+        - transportCategory
+      type: object
+      properties:
+        Stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/Stop'
+        Product:
+          $ref: '#/components/schemas/Product'
+        name:
+          type: string
+          example: Länstrafik - Spårväg 7
+          xml:
+            attribute: true
+        type:
+          type: string
+          example: S
+          xml:
+            attribute: true
+        stop:
+          type: string
+          example: T-Centralen Spårv (Stockholm kn)
+          xml:
+            attribute: true
+        stopId:
+          type: string
+          example: 740035997
+          deprecated: true
+          xml:
+            attribute: true
+        stopExtId:
+          type: string
+          example: 740021190
+          xml:
+            attribute: true
+        time:
+          type: string
+          format: time
+          example: "10:53:00"
+          xml:
+            attribute: true
+        date:
+          type: string
+          format: date
+          example: "2019-04-15"
+          xml:
+            attribute: true
+        direction:
+          type: string
+          example: Stockholm Waldemarsudde
+          xml:
+            attribute: true
+        transportNumber:
+          type: string
+          example: "7"
+          xml:
+            attribute: true
+        transportCategory:
+          type: string
+          example: SLT
+          xml:
+            attribute: true
+    StopLookupResponse:
+      required:
+        - StopLocation
+      type: object
+      properties:
+        StopLocation:
+          type: array
+          xml:
+            name: StopLocation
+          items:
+            $ref: '#/components/schemas/StopLookupEntry'
+      xml:
+        name: LocationList
+    StopLookupEntry:
+      required:
+        - id
+        - extid
+        - name
+        - lon
+        - lat
+        - weight
+        - products
+      type: object
+      properties:
+        id:
+          type: string
+          example: "740000001"
+          description: 'An internal identifier for this stop. Do not use this value. Use extId instead.'
+          deprecated: true
+          xml:
+            attribute: true
+        extId:
+          type: string
+          description: 'The external id for this stop, which can be used to call other ResRobot API endpoints.'
+          example: "740000001"
+          xml:
+            attribute: true
+        name:
+          type: string
+          example: "Stockholm Centralstation"
+          description: 'The name of this stop.'
+          xml:
+            attribute: true
+        lon:
+          type: number
+          example: 18.058151
+          description: 'The location of this stop.'
+          xml:
+            attribute: true
+        lat:
+          type: number
+          description: 'The location of this stop.'
+          example: 59.330136
+          xml:
+            attribute: true
+        weight:
+          type: number
+          description: 'The importance of the stop, showing how busy the bus stop is, the weight, the number of trips, can be used for purposes of classification. The range is between 0 and 32767'
+          example: 5222
+          minimum: 0
+          maximum: 32767
+          xml:
+            attribute: true
+        products:
+          type: number
+          description: 'The sum of the traffic modes which are served at this stop.
+          <ul>
+            <li> 1: Airplanes</li>
+            <li> 2: High-speed and express trains</li>
+            <li> 4: Regional and InterCity trains</li>
+            <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+            <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
+            <li> 32: Subways</li>
+            <li> 64: Trams and light rail</li>
+            <li> 128: Local busses</li>
+            <li> 256: Ferries, boats and cruises</li>
+            <li> 512: Taxi</li>
+          </ul>'
+          example: 6
+          xml:
+            attribute: true
+  securitySchemes:
+    api_key_routeplanner:
+      type: apiKey
+      name: Resrobot Reseplanerare API key, for route-planning and station lookups
+      in: query
+    api_key_timetable:
+      type: apiKey
+      name: Resrobot Stolptidstabeller 2 API key, for departure and arrival boards
+      in: query
