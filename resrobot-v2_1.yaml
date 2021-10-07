@@ -123,6 +123,7 @@ paths:
         required: false
         schema:
           type: string
+          default: 'ALL'
           enum:
             - 'ALL'
             - 'S'
@@ -131,7 +132,6 @@ paths:
             - 'SA'
             - 'SP'
             - 'AP'
-           default: 'ALL'
       responses:
         200:
           description: Successful request
@@ -272,7 +272,7 @@ paths:
       - name: destCoordLat
         in: query
         required: false
-        description: 'The latitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId.'
+        description: "The latitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
         style: form
         schema:
           type: number
@@ -280,7 +280,7 @@ paths:
       - name: destCoordLong
         in: query
         required: false
-        description: 'The longitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId.'
+        description: "The longitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
         style: form
         schema:
           type: number
@@ -294,7 +294,7 @@ paths:
             type: string
             format: date
             pattern: '^\d{4}-\d{2}-\d{2}$'
-            default:
+            default: Current server date
       - name: time
         in: query
         description: 'The time at which the journey should depart or arrive. Formatted as HH:mm. When unspecified, the current time is used.'
@@ -1471,10 +1471,10 @@ components:
     StopLookupEntryWrapper:
       required:
         - StopLocation
-        type: object
-        properties:
-          StopLocation:
-            $ref: '#/components/schemas/StopLookupEntry'
+      type: object
+      properties:
+        StopLocation:
+          $ref: '#/components/schemas/StopLookupEntry'
       xml:
         name: LocationList
     StopLookupEntry:
@@ -1563,6 +1563,6 @@ components:
           description: 'Distance from the searched coordinates in case of a nearby stops search, absent in case of stop lookup by name'
   securitySchemes:
     api_key:
-      type: accessId
-      name: Resrobot API v2.1 key, used for all endpoints
+      type: apiKey
+      name: accessId
       in: query
