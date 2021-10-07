@@ -549,6 +549,15 @@ paths:
           items:
             type: integer
             format: int32
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+          type: string
+          enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+          default: sv
       - name: format
         in: query
         description: Whether or not to include the list of stations which are passed on this journey.
@@ -665,6 +674,15 @@ paths:
           items:
             type: integer
             format: int32
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+          type: string
+          enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+          default: sv
       - name: format
         in: query
         description: Whether or not to include the list of stations which are passed on this journey.
@@ -1360,16 +1378,18 @@ components:
         products:
           type: number
           description: 'The sum of the traffic modes which are served at this stop.
-          1:Airplane
-          2:High speed train
-          4:Train
-          8:Expressbuss
-          16:Local train
-          32:Metro
-          64:tram
-          128:Bus
-          256:Boat
-          512:Taxis'
+          <ul>
+            <li> 1: Airplanes</li>
+            <li> 2: High-speed and express trains</li>
+            <li> 4: Regional and InterCity trains</li>
+            <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
+            <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
+            <li> 32: Subways</li>
+            <li> 64: Trams and light rail</li>
+            <li> 128: Local buses</li>
+            <li> 256: Ferries, boats and cruises</li>
+            <li> 512: Taxi</li>
+          </ul>'
           example: 6
           xml:
             attribute: true

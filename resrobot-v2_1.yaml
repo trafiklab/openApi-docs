@@ -39,13 +39,13 @@ paths:
       summary: 'Use this method to search for stations and stops based on a name.'
       description: 'Use this method to search for stations and stops based on a name. You can search for stations for both departures and arrival of a call. The stations found can then be presented to a user so that they can choose exactly which station they want to travel to or from. This method is not designed to be used for auto-complete solutions where a search is done while the user enters the name of a station. If you wish to use autocomplete, or if you want to provide your users with **the best experience**, please use the **GTFS Sverige 2 stops.txt** file as an offline database.
         <h3>Order of the results</h3>
-        <p>The results are ordered by station “weight”, where stations with more weight are shown higher in the list. Each station or stop is assigned a weight value which indicates how “busy” this station is. The higher the value, the more “busy” the station is. The calculation is based on the product classes. For each product class operating at this stop, the frequency how often this product class operates is rated between 0 and 3 where 0 means this product isn’t operating and 3 means that this product operates at a high frequency. Then an individual weight is calculated for product class by multiplying the frequency rating with a certain factor. These factors take into account that traffic by trains for example weighs higher than traffic by busses. The weight for the station is then the sum over all individual weights for each product class.</p>'
+        <p>The results are ordered by station “weight”, where stations with more weight are shown higher in the list. Each station or stop is assigned a weight value which indicates how “busy” this station is. The higher the value, the more “busy” the station is. The calculation is based on the product classes. For each product class operating at this stop, the frequency how often this product class operates is rated between 0 and 3 where 0 means this product isn’t operating and 3 means that this product operates at a high frequency. Then an individual weight is calculated for product class by multiplying the frequency rating with a certain factor. These factors take into account that traffic by trains for example weighs higher than traffic by buses. The weight for the station is then the sum over all individual weights for each product class.</p>'
       operationId: lookupStationName
       parameters:
       - name: input
         in: query
-        description: 'The name, or a part of the name, of the station that should be looked up. <p>By default, the system will search for results with a 100% match between the search string and results. For example, when searching for "stock" it will only return results which contain "stock" somewhere in their name. However, in many cases it may be of interest to see the other results which may not represent a 100% match but are still quite close. To enable this output, add a question mark “?” at the end of the input string. Then the service will also return the other, non-100% matching results up to the specified maximum number of results. For example, "Mälarsjukhus?" will also return "Mälarparksvägen" because of the partial match, but would not be included without the question mark in the query.
-          <p>This name should be [URL-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding).</p>'
+        description: "The name, or a part of the name, of the station that should be looked up. <p>By default, the system will search for results with a 100% match between the search string and results. For example, when searching for 'stock' it will only return results which contain 'stock' somewhere in their name. However, in many cases it may be of interest to see the other results which may not represent a 100% match but are still quite close. To enable this output, add a question mark “?” at the end of the input string. Then the service will also return the other, non-100% matching results up to the specified maximum number of results. For example, 'Mälarsjukhus?' will also return 'Mälarparksvägen' because of the partial match, but would not be included without the question mark in the query.
+          <p>This name should be [URL-encoded](https://developer.mozilla.org/en-US/docs/Glossary/percent-encoding).</p>"
         required: true
         style: form
         schema:
@@ -58,7 +58,8 @@ paths:
         schema:
             type: integer
             default: 10
-            maximum: 50
+            minimum: 1
+            maximum: 1000
       - name: lang
         in: query
         description: 'The language used for informational texts and error messages.'
@@ -66,7 +67,7 @@ paths:
         style: form
         schema:
             type: string
-            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+            enum: [sv, en, da, no, de, fr, it, nl, tr, pl, es, hu]
             default: sv
       - name: format
         in: query
@@ -77,6 +78,60 @@ paths:
             type: string
             enum: [json, xml]
             default: xml
+      - name: requestId
+        in: query
+        description: 'Request ID for identifying the request. This id will be passed back to the user in the response, making it well-suited for handling asynchronous requests.'
+        style: form
+        required: false
+        schema:
+          type: string
+          default: 'random string'
+      - name: r
+        in: query
+        description: 'Only search for coordinates in a certain radius from a given coordinate. r represents the radius in meters. coordLat and coordLong are required when this parameter is used. Note that this is a computationally intensive method that should be used sparingly!'
+        style: form
+        required: false
+        schema:
+          type: integer
+          default: 1000
+          maximum: 10000
+      - name: coordLat
+        in: query
+        description: 'Only search for coordinates in a certain radius from a given coordinate. coordLat represents the latitude of the center point. r and coordLong are required when this parameter is used. Note that this is a computationally intensive method that should be used sparingly!'
+        style: form
+        required: false
+        schema:
+          type: string
+      - name: coordLong
+        in: query
+        description: 'Only search for coordinates in a certain radius from a given coordinate. coordLong represents the longitude of the center point. r and coordLat are required when this parameter is used. Note that this is a computationally intensive method that should be used sparingly!'
+        style: form
+        required: false
+        schema:
+          type: string
+      - name: type
+        in: query
+        description: |
+          * `ALL`: search in all existing location pools
+          * `S`: Search for station/stops only
+          * `A`: Search for addresses only
+          * `P`: Search for POIs only
+          * `SA`: Search for station/stops and addresses
+          * `SP`: search for station/stops and POIs
+          * `AP`: search for addresses and POIs
+        style: form
+        required: false
+        schema:
+          type: string
+          enum:
+            - 'ALL'
+            - 'S'
+            - 'A'
+            - 'P'
+            - 'SA'
+            - 'SP'
+            - 'AP'
+           default: 'ALL'
       responses:
         200:
           description: Successful request
@@ -88,7 +143,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/StopLookupResponse'
       security:
-        - api_key_routeplanner: []
+        - api_key: []
   /location.nearbystops:
     get:
       tags:
@@ -142,7 +197,7 @@ paths:
         style: form
         schema:
             type: string
-            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+            enum: [sv, en, da, no, de, fr, it, nl, tr, pl, es, hu]
             default: sv
       - name: format
         in: query
@@ -153,6 +208,14 @@ paths:
             type: string
             enum: [json, xml]
             default: xml
+      - name: requestId
+        in: query
+        description: 'Request ID for identifying the request. This id will be passed back to the user in the response, making it well-suited for handling asynchronous requests.'
+        style: form
+        required: false
+        schema:
+          type: string
+          default: 'random string'
       responses:
         200:
           description: Successful request
@@ -164,7 +227,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/StopLookupResponse'
       security:
-        - api_key_routeplanner: []
+        - api_key: []
   /trip:
     get:
       tags:
@@ -174,7 +237,7 @@ paths:
       parameters:
       - name: originId
         in: query
-        description: The 9-digit stop ID for the origin of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2.
+        description: "The 9-digit stop ID for the origin of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2."
         required: true
         style: form
         schema:
@@ -183,7 +246,7 @@ paths:
           pattern: '^\d{9}$'
       - name: destId
         in: query
-        description: The 9-digit stop ID for the destination of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2.
+        description: "The 9-digit stop ID for the destination of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2."
         required: true
         style: form
         schema:
@@ -209,7 +272,7 @@ paths:
       - name: destCoordLat
         in: query
         required: false
-        description: "The latitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
+        description: 'The latitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId.'
         style: form
         schema:
           type: number
@@ -217,7 +280,7 @@ paths:
       - name: destCoordLong
         in: query
         required: false
-        description: "The longitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId."
+        description: 'The longitude of the destination location in the WGS84 coordinate system. This field can be used in case you want to specify a geographical point instead of a specific stop. When this field is provided, destinationId should *NOT* be provided. Note that using this features requires GDPR consent from your users, as this transfers sensitive personal information to either your or our servers. It is instead recommended to search the nearest stops by using a database (based on GTFS Sverige 2's stops) on the client device, and using the nearest stop for destinationId.'
         style: form
         schema:
           type: number
@@ -290,7 +353,7 @@ paths:
             default: 4
       - name: numB
         in: query
-        description: 'The nminimum number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested. Searching backwards can significantly slow down your request.'
+        description: 'The minimum number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested. Searching backwards can significantly slow down your request.'
         required: false
         style: form
         schema:
@@ -344,11 +407,11 @@ paths:
         <ul>
           <li> 2: High-speed and express trains</li>
           <li> 4: Regional and InterCity trains</li>
-          <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+          <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
           <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
           <li> 32: Subways</li>
           <li> 64: Trams and light rail</li>
-          <li> 128: Local busses</li>
+          <li> 128: Local buses</li>
           <li> 256: Ferries, boats and cruises</li>
           <li> 512: Taxi</li>
         </ul>'
@@ -386,11 +449,12 @@ paths:
             default: 0
       - name: origWalk
         in: query
-        description: "Enables/disables using footpaths in the beginning of a trip when searching from an address. To fine-tune the minimum and/or maximum distance to the next public transport station, provide the following values separted by comma:
+        description: "Enables/disables using footpaths in the beginning of a trip when searching from an address. To fine-tune the minimum and/or maximum distance to the next public transport station, provide the following values separated by comma:
         <ul>
           <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
           <li>The minimum walking distance (in meters)
           <li>The maximum walking distance (in meters)
+          <li>The relative walking speed (in %)
         </ul>
         <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter originWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
         schema:
@@ -401,11 +465,12 @@ paths:
             format: int32
       - name: destWalk
         in: query
-        description:  "Enables/disables using footpaths in the end of a trip when searching to an address. To fine-tune the minimum and/or maximum distance to the next public transport station, provide the following values separted by comma:
+        description:  "Enables/disables using footpaths in the end of a trip when searching to an address. To fine-tune the minimum and/or maximum distance to the next public transport station, provide the following values separated by comma:
         <ul>
           <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
           <li>The minimum walking distance (in meters)
           <li>The maximum walking distance (in meters)
+          <li>The relative walking speed (in %)
         </ul>
         <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter destWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
         schema:
@@ -429,7 +494,7 @@ paths:
         style: form
         schema:
             type: string
-            enum: [sv, en, da, de, fr, it, nl, tr, pl, es]
+            enum: [sv, en, da, no, de, fr, it, nl, tr, pl, es, hu]
             default: sv
       - name: format
         in: query
@@ -438,6 +503,14 @@ paths:
           type: string
           enum: [json, xml]
           default: xml
+      - name: requestId
+        in: query
+        description: 'Request ID for identifying the request. This id will be passed back to the user in the response, making it well-suited for handling asynchronous requests.'
+        style: form
+        required: false
+        schema:
+          type: string
+          default: 'random string'
       responses:
         200:
           description: Successful request
@@ -458,7 +531,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/LocationMissingException'
       security:
-      - api_key_routeplanner: []
+      - api_key: []
   /departureBoard:
     get:
       tags:
@@ -488,7 +561,7 @@ paths:
             default: Current server date
       - name: time
         in: query
-        description: 'The time whereafter departures should depart. Formatted as HH:mm. Default when not specified: now.'
+        description: 'The time after which departures should depart. Formatted as HH:mm. Default when not specified: now.'
         required: false
         style: form
         schema:
@@ -521,11 +594,11 @@ paths:
         <ul>
           <li> 2: High-speed and express trains</li>
           <li> 4: Regional and InterCity trains</li>
-          <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+          <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
           <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
           <li> 32: Subways</li>
           <li> 64: Trams and light rail</li>
-          <li> 128: Local busses</li>
+          <li> 128: Local buses</li>
           <li> 256: Ferries, boats and cruises</li>
           <li> 512: Taxi</li>
         </ul>'
@@ -545,6 +618,15 @@ paths:
           items:
             type: integer
             format: int32
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+          type: string
+          enum: [ sv, en, da, no, de, fr, it, nl, tr, pl, es, hu ]
+          default: sv
       - name: format
         in: query
         description: Whether or not to include the list of stations which are passed on this journey.
@@ -552,6 +634,14 @@ paths:
           type: string
           enum: [json, xml]
           default: xml
+      - name: requestId
+        in: query
+        description: 'Request ID for identifying the request. This id will be passed back to the user in the response, making it well-suited for handling asynchronous requests.'
+        style: form
+        required: false
+        schema:
+          type: string
+          default: 'random string'
       responses:
         200:
           description: Successful request
@@ -575,7 +665,7 @@ paths:
           description: Not found
           content: {}
       security:
-      - api_key_timetable: []
+      - api_key: []
   /arrivalBoard:
     get:
       tags:
@@ -636,11 +726,11 @@ paths:
         <ul>
           <li> 2: High-speed and express trains</li>
           <li> 4: Regional and InterCity trains</li>
-          <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+          <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
           <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
           <li> 32: Subways</li>
           <li> 64: Trams and light rail</li>
-          <li> 128: Local busses</li>
+          <li> 128: Local buses</li>
           <li> 256: Ferries, boats and cruises</li>
           <li> 512: Taxi</li>
         </ul>'
@@ -660,6 +750,15 @@ paths:
           items:
             type: integer
             format: int32
+      - name: lang
+        in: query
+        description: 'The language used for informational texts and error messages.'
+        required: false
+        style: form
+        schema:
+          type: string
+          enum: [ sv, en, da, no, de, fr, it, nl, tr, pl, es, hu ]
+          default: sv
       - name: format
         in: query
         description: Whether or not to include the list of stations which are passed on this journey.
@@ -667,6 +766,14 @@ paths:
           type: string
           enum: [json, xml]
           default: xml
+      - name: requestId
+        in: query
+        description: 'Request ID for identifying the request. This id will be passed back to the user in the response, making it well-suited for handling asynchronous requests.'
+        style: form
+        required: false
+        schema:
+          type: string
+          default: 'random string'
       responses:
         200:
           description: Successful request
@@ -690,7 +797,7 @@ paths:
           description: Not found
           content: {}
       security:
-      - api_key_timetable: []
+      - api_key: []
 components:
   schemas:
     JourneyPlannerResult:
@@ -986,33 +1093,82 @@ components:
     Product:
       required:
         - name
-        - num
-        - catCode
-        - catOutS
-        - catOutL
-        - operatorCode
-        - operator
-        - operatorUrl
+        - cls
       type: object
       properties:
         name:
           type: string
-          example: Länstrafik - Buss 1
+          example: Länstrafik - Buss X4
+          xml:
+            attribute: true
+        internalName:
+          type: string
+          example: Länstrafik - Buss X4
+          description: "Internal product name. Not used for display."
+          deprecated: true
           xml:
             attribute: true
         num:
           type: string
-          example: "1"
+          example: "X4"
+          description: "Internal product number (e.g. train number)"
+          xml:
+            attribute: true
+        displayNumber:
+          type: string
+          example: "X4"
+          description: "Number for display"
+          xml:
+            attribute: true
+        line:
+          type: string
+          example: "X4"
+          description: "Number for display"
+          xml:
+            attribute: true
+        lineId:
+          type: string
+          example: "1279520500001"
+          description: "External line id for use in further requests"
           xml:
             attribute: true
         catCode:
           type: string
+          description: "Product category code, matches GTFS route_types"
           example: "7"
+          xml:
+            attribute: true
+        cls:
+          type: string
+          description: "Product category in decimal form.
+          <ul>
+            <li> 1: Airplanes</li>
+            <li> 2: High-speed and express trains</li>
+            <li> 4: Regional and InterCity trains</li>
+            <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
+            <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
+            <li> 32: Subways</li>
+            <li> 64: Trams and light rail</li>
+            <li> 128: Local buses</li>
+            <li> 256: Ferries, boats and cruises</li>
+            <li> 512: Taxi</li>
+          </ul>"
+          example: "128"
+          xml:
+            attribute: true
+        catOut:
+          type: string
+          example: "BLT"
+          xml:
+            attribute: true
+        catIn:
+          type: string
+          example: "BLT"
           xml:
             attribute: true
         catOutS:
           type: string
-          example: BLT
+          example: "BLT"
           xml:
             attribute: true
         catOutL:
@@ -1027,15 +1183,9 @@ components:
             attribute: true
         operator:
           type: string
-          example: Länstrafiken Örebro
+          example: Västtrafik
           xml:
             attribute: true
-        operatorUrl:
-          type: string
-          example: http://www.lanstrafiken.se/orebro
-          xml:
-            attribute: true
-
     Stop:
       required:
         - name
@@ -1148,6 +1298,7 @@ components:
     DepartureBoardEntry:
       required:
         - Product
+        - ProductAtStop
         - Stops
         - name
         - type
@@ -1165,11 +1316,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Stop'
-        Product:
+        ProductAtStop:
           $ref: '#/components/schemas/Product'
+        Product:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
         name:
           type: string
-          example: Länstrafik - Spårväg 7
+          example: Länstrafik - Buss X4
           xml:
             attribute: true
         type:
@@ -1212,17 +1367,18 @@ components:
             attribute: true
         transportNumber:
           type: string
-          example: "7"
+          example: "X4"
           xml:
             attribute: true
         transportCategory:
           type: string
-          example: SLT
+          example: BLT
           xml:
             attribute: true
     ArrivalBoardEntry:
       required:
         - Product
+        - ProductAtStop
         - Stops
         - name
         - type
@@ -1240,8 +1396,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Stop'
-        Product:
+        ProductAtStop:
           $ref: '#/components/schemas/Product'
+        Product:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
         name:
           type: string
           example: Länstrafik - Spårväg 7
@@ -1305,6 +1465,15 @@ components:
           xml:
             name: StopLocation
           items:
+            $ref: '#/components/schemas/StopLookupEntryWrapper'
+      xml:
+        name: LocationList
+    StopLookupEntryWrapper:
+      required:
+        - StopLocation
+        type: object
+        properties:
+          StopLocation:
             $ref: '#/components/schemas/StopLookupEntry'
       xml:
         name: LocationList
@@ -1317,6 +1486,8 @@ components:
         - lat
         - weight
         - products
+        - productAtStop
+        - timezoneOffset
       type: object
       properties:
         id:
@@ -1365,23 +1536,33 @@ components:
             <li> 1: Airplanes</li>
             <li> 2: High-speed and express trains</li>
             <li> 4: Regional and InterCity trains</li>
-            <li> 8: Long-distance busses, e.g. ExpressBuss, Flygbussar</li>
+            <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
             <li> 16: Local trains, e.g. Lokaltåg, Pågatåg, Öresundståg</li>
             <li> 32: Subways</li>
             <li> 64: Trams and light rail</li>
-            <li> 128: Local busses</li>
+            <li> 128: Local buses</li>
             <li> 256: Ferries, boats and cruises</li>
             <li> 512: Taxi</li>
           </ul>'
           example: 6
           xml:
             attribute: true
+        productAtStop:
+          type: array
+          xml:
+            name: productAtStop
+          items:
+            $ref: '#/components/schemas/Product'
+        timezoneOffset:
+          type: number
+          example: 120
+          description: 'Timezone offset, compared to UTC, for this stop'
+        dist:
+          type: number
+          example: 68
+          description: 'Distance from the searched coordinates in case of a nearby stops search, absent in case of stop lookup by name'
   securitySchemes:
-    api_key_routeplanner:
-      type: apiKey
-      name: Resrobot Reseplanerare API key, for route-planning and station lookups
-      in: query
-    api_key_timetable:
-      type: apiKey
-      name: Resrobot Stolptidstabeller 2 API key, for departure and arrival boards
+    api_key:
+      type: accessId
+      name: Resrobot API v2.1 key, used for all endpoints
       in: query
