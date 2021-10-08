@@ -910,14 +910,9 @@ components:
         - Origin
         - Destination
         - Product
-        - Stops
         - idx
         - name
-        - transportNumber
-        - transportCategory
         - type
-        - reachable
-        - direction
       type: object
       properties:
         Origin:
@@ -963,6 +958,19 @@ components:
         direction:
           type: string
           example: Skiffergatan (Örebro kn)
+          xml:
+            attribute: true
+        journeyStatus:
+          type: string
+          example: 'P'
+          description: "Contains the status of the journey: **P**lanned, **R**eplacement, **A**dditional or **S**pecial"
+          xml:
+            attribute: true
+          enum: [ P, R, A, S ]
+        journeyDetailRef:
+          type: string
+          example: '1|76959|1|80|22092021'
+          description: Reference to journey details of this leg.
           xml:
             attribute: true
 

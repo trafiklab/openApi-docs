@@ -387,7 +387,7 @@ paths:
             type: integer
             format: int32
             enum: [0,1]
-            default: 0
+            default: 1
       - name: origWalk
         in: query
         description: "Enables/disables using footpaths in the beginning of a trip when searching from an address. To fine tune the minimum and/or maximum distance to the next public transport station, provide the following values separated by comma:
@@ -826,14 +826,9 @@ components:
         - Origin
         - Destination
         - Product
-        - Stops
         - idx
         - name
-        - transportNumber
-        - transportCategory
         - type
-        - reachable
-        - direction
       type: object
       properties:
         Origin:
