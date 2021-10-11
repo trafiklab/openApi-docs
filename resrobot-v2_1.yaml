@@ -1031,13 +1031,12 @@ components:
             attribute: true
         id:
           type: string
-          example: 740000361
+          example: "A=1@O=Stockholm Centralstation@X=18058151@Y=59330136@u=87@U=80@L=740000001@"
+          description: "Internal id, do not use"
           xml:
             attribute: true
         extId:
           type: string
-          example: 740000361
-          deprecated: true
           xml:
             attribute: true
         lon:
@@ -1093,8 +1092,8 @@ components:
             attribute: true
         id:
           type: string
-          example: 740000133
-          deprecated: true
+          example: "A=1@O=Örebro Centralstation@X=15211348@Y=59278942@u=87@U=80@L=740000133@"
+          description: "Internal id, do not use"
           xml:
             attribute: true
         extId:
@@ -1145,7 +1144,6 @@ components:
           type: string
           example: Länstrafik - Buss X4
           description: "Internal product name. Not used for display."
-          deprecated: true
           xml:
             attribute: true
         num:
@@ -1255,8 +1253,8 @@ components:
             attribute: true
         id:
           type: string
-          example: 740021190
-          deprecated: true
+          example: "A=1@O=Örebro Slottet@X=15214297@Y=59274672@u=87@U=80@L=740021190@"
+          description: "Internal id, do not use"
           xml:
             attribute: true
         extId:
@@ -1404,8 +1402,8 @@ components:
             attribute: true
         stopId:
           type: string
-          example: 740035997
-          deprecated: true
+          example: "A=1@O=Stockholm Centralstation@X=18058151@Y=59330136@u=87@U=80@L=740000001@"
+          description: "Internal id, do not use"
           xml:
             attribute: true
         stopExtId:
@@ -1493,8 +1491,8 @@ components:
             attribute: true
         stopId:
           type: string
-          example: 740035997
-          deprecated: true
+          example: "A=1@O=Stockholm Centralstation@X=18058151@Y=59330136@u=87@U=80@L=740000001@"
+          description: "Internal id, do not use"
           xml:
             attribute: true
         stopExtId:
@@ -1528,15 +1526,20 @@ components:
 
     StopLookupResponse:
       required:
-        - StopLocation
+        - stopLocationOrCoordLocation
       type: object
       properties:
-        StopLocation:
-          type: array
-          xml:
-            name: StopLocation
-          items:
-            $ref: '#/components/schemas/StopLookupEntryWrapper'
+        stopLocationOrCoordLocation:
+          type: object
+          required:
+            - StopLocation
+          properties:
+            StopLocation:
+              type: array
+              xml:
+                name: StopLocation
+              items:
+                $ref: '#/components/schemas/StopLookupEntryWrapper'
         requestId:
           $ref: '#/components/schemas/requestId'
       xml:
@@ -1565,9 +1568,8 @@ components:
       properties:
         id:
           type: string
-          example: "740000001"
+          example: "A=1@O=Stockholm Centralstation@X=18058151@Y=59330136@u=87@U=80@L=740000001@"
           description: 'An internal identifier for this stop. Do not use this value. Use extId instead.'
-          deprecated: true
           xml:
             attribute: true
         extId:
@@ -1602,6 +1604,14 @@ components:
           maximum: 32767
           xml:
             attribute: true
+        timezoneOffset:
+          type: number
+          example: 120
+          description: 'Timezone offset, compared to UTC, for this stop'
+        dist:
+          type: number
+          example: 68
+          description: 'Distance from the searched coordinates in case of a nearby stops search, absent in case of stop lookup by name'
         products:
           type: number
           description: 'The sum of the traffic modes which are served at this stop.
@@ -1626,14 +1636,6 @@ components:
             name: productAtStop
           items:
             $ref: '#/components/schemas/Product'
-        timezoneOffset:
-          type: number
-          example: 120
-          description: 'Timezone offset, compared to UTC, for this stop'
-        dist:
-          type: number
-          example: 68
-          description: 'Distance from the searched coordinates in case of a nearby stops search, absent in case of stop lookup by name'
 
     transportCategory:
       type: string
@@ -1691,7 +1693,6 @@ components:
       example: 'custom-request-id'
       xml:
         attribute: true
-
 
   securitySchemes:
     api_key:
