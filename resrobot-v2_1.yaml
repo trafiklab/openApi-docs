@@ -85,7 +85,7 @@ paths:
         required: false
         schema:
           type: string
-          default: 'random string'
+          default: 'custom-request-id'
       - name: r
         in: query
         description: 'Only search for coordinates in a certain radius from a given coordinate. r represents the radius in meters. coordLat and coordLong are required when this parameter is used. Note that this is a computationally intensive method that should be used sparingly!'
@@ -569,15 +569,28 @@ paths:
             format: time
             pattern: '^\d{2}:\d{2}$'
             default: Current server time
+      - name: duration
+        in: query
+        style: form
+        description: 'Set the interval size in minutes. Only departures within this interval will be returned.'
+        schema:
+          type: integer
+          format: int64
+          default: 60
+          minimum: 0
+          maximum: 1439
       - name: maxJourneys
         in: query
-        description: The maximum number of results to return. Note that this is not a hard limit. If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
+        description: 'The maximum number of results to return. Note that this is not a hard limit.
+        - If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
+        - This value is ignored when realtime data is available. For a consistent limit, please use the `duration` parameter.
+        - when not defined or set to -1, all values within the defined `period` are returned'
         required: false
         style: form
         schema:
           type: integer
           format: int64
-          default: 25
+          default: -1
       - name: direction
         in: query
         description: 'If only vehicles departing or arriving from a certain direction shall be returned, specify the direction by giving the station/stop ID of the last stop on the journey.'
@@ -618,6 +631,14 @@ paths:
           items:
             type: integer
             format: int32
+      - name: passList
+        in: query
+        description: Enables/disables the return of the passlist for departure. A passlist is a list of all stops where the vehicle halts after departing from the queried stop.
+        schema:
+          type: integer
+          format: int32
+          enum: [0,1]
+          default: 0
       - name: lang
         in: query
         description: 'The language used for informational texts and error messages.'
@@ -702,15 +723,28 @@ paths:
             format: time
             pattern: '^\d{2}:\d{2}$'
             default: Current server time
+      - name: duration
+        in: query
+        style: form
+        description: 'Set the interval size in minutes. Only arrivals within this interval will be returned.'
+        schema:
+          type: integer
+          format: int64
+          default: 60
+          minimum: 0
+          maximum: 1439
       - name: maxJourneys
         in: query
-        description: The maximum number of results to return. Note that this is not a hard limit. If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
+        description: 'The maximum number of results to return. Note that this is not a hard limit.
+        - If the maximum number of results is reached, but there are more results departing at the same time, those will be included as well. This ensures scrolling forward by using the last departure date increased by one minute as time works without issues.
+        - This value is ignored when realtime data is available. For a consistent limit, please use the `duration` parameter.
+        - when not defined or set to -1, all values within the defined `period` are returned'
         required: false
         style: form
         schema:
           type: integer
           format: int64
-          default: 25
+          default: -1
       - name: direction
         in: query
         description: 'If only vehicles departing or arriving from a certain direction shall be returned, specify the direction by giving the station/stop ID of the last stop on the journey.'
@@ -750,6 +784,14 @@ paths:
           items:
             type: integer
             format: int32
+      - name: passList
+        in: query
+        description: Enables/disables the return of the passlist for each arrival. A passlist is a list of all stops where the vehicle stops before arriving at the queried stop.
+        schema:
+          type: integer
+          format: int32
+          enum: [0,1]
+          default: 0
       - name: lang
         in: query
         description: 'The language used for informational texts and error messages.'
@@ -822,6 +864,8 @@ components:
           type: string
           example: 1|OF|MTµ11µ9...
           description: Context string to search later journeys
+        requestId:
+          $ref: '#/components/schemas/requestId'
       xml:
         name: TripList
     Trip:
@@ -941,10 +985,7 @@ components:
           xml:
             attribute: true
         transportCategory:
-          type: string
-          example: BLT
-          xml:
-            attribute: true
+          $ref: '#/components/schemas/transportCategory'
         type:
           type: string
           example: JNY
@@ -960,19 +1001,10 @@ components:
           example: Skiffergatan (Örebro kn)
           xml:
             attribute: true
-        journeyStatus:
-          type: string
-          example: 'P'
-          description: "Contains the status of the journey: **P**lanned, **R**eplacement, **A**dditional or **S**pecial"
-          xml:
-            attribute: true
-          enum: [ P, R, A, S ]
-        journeyDetailRef:
-          type: string
-          example: '1|76959|1|80|22092021'
-          description: Reference to journey details of this leg.
-          xml:
-            attribute: true
+        JourneyStatus:
+          $ref: '#/components/schemas/JourneyStatus'
+        JourneyDetailRef:
+          $ref: '#/components/schemas/JourneyDetailRef'
 
     Origin:
       required:
@@ -1164,6 +1196,17 @@ components:
           example: "128"
           xml:
             attribute: true
+          enum:
+            - '1'
+            - '2'
+            - '4'
+            - '8'
+            - '16'
+            - '32'
+            - '64'
+            - '128'
+            - '256'
+            - '512'
         catOut:
           type: string
           example: "BLT"
@@ -1194,6 +1237,7 @@ components:
           example: Västtrafik
           xml:
             attribute: true
+
     Stop:
       required:
         - name
@@ -1288,6 +1332,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DepartureBoardEntry'
+        requestId:
+          $ref: '#/components/schemas/requestId'
+
       xml:
         name: DepartureBoard
 
@@ -1300,6 +1347,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ArrivalBoardEntry'
+        requestId:
+          $ref: '#/components/schemas/requestId'
       xml:
         name: ArrivalBoard
 
@@ -1337,9 +1386,17 @@ components:
             attribute: true
         type:
           type: string
-          example: S
+          example: ST
+          description: "The attribute type specifies the type of departs location. Valid values are ST (stop/station), ADR (address), POI (point of interest), CRD (coordinate), MCP (mode change point) or HL (hailing point)."
           xml:
             attribute: true
+          enum:
+            - ST
+            - ADR
+            - POI
+            - CRD
+            - MCP
+            - HL
         stop:
           type: string
           example: T-Centralen Spårv (Stockholm kn)
@@ -1370,19 +1427,20 @@ components:
             attribute: true
         direction:
           type: string
-          example: Stockholm Waldemarsudde
+          example: "Mölnlycke station (Härryda kn)"
           xml:
             attribute: true
-        transportNumber:
-          type: string
-          example: "X4"
-          xml:
-            attribute: true
+        reachable:
+          type: boolean
+          description: Will be true if this journey is reachable
+          example: true
         transportCategory:
-          type: string
-          example: BLT
-          xml:
-            attribute: true
+          $ref: '#/components/schemas/transportCategory'
+        JouurneyStatus:
+          $ref: '#/components/schemas/JourneyStatus'
+        JourneyDetailRef:
+          $ref: '#/components/schemas/JourneyDetailRef'
+
     ArrivalBoardEntry:
       required:
         - Product
@@ -1417,9 +1475,17 @@ components:
             attribute: true
         type:
           type: string
-          example: S
+          example: ST
+          description: "The attribute type specifies the type of arrivals location. Valid values are ST (stop/station), ADR (address), POI (point of interest), CRD (coordinate), MCP (mode change point) or HL (hailing point)."
           xml:
             attribute: true
+          enum:
+            - ST
+            - ADR
+            - POI
+            - CRD
+            - MCP
+            - HL
         stop:
           type: string
           example: T-Centralen Spårv (Stockholm kn)
@@ -1450,19 +1516,16 @@ components:
             attribute: true
         direction:
           type: string
-          example: Stockholm Waldemarsudde
-          xml:
-            attribute: true
-        transportNumber:
-          type: string
-          example: "7"
+          example: "Mölnlycke station (Härryda kn)"
           xml:
             attribute: true
         transportCategory:
-          type: string
-          example: SLT
-          xml:
-            attribute: true
+          $ref: '#/components/schemas/transportCategory'
+        JourneyStatus:
+          $ref: '#/components/schemas/JourneyStatus'
+        JourneyDetailRef:
+          $ref: '#/components/schemas/JourneyDetailRef'
+
     StopLookupResponse:
       required:
         - StopLocation
@@ -1474,6 +1537,8 @@ components:
             name: StopLocation
           items:
             $ref: '#/components/schemas/StopLookupEntryWrapper'
+        requestId:
+          $ref: '#/components/schemas/requestId'
       xml:
         name: LocationList
     StopLookupEntryWrapper:
@@ -1569,6 +1634,65 @@ components:
           type: number
           example: 68
           description: 'Distance from the searched coordinates in case of a nearby stops search, absent in case of stop lookup by name'
+
+    transportCategory:
+      type: string
+      example: BLT
+      xml:
+        attribute: true
+      description: "Possible values:
+              <ul>
+              <li>BLT: Regional bus</li>
+              <li>BXB: Express bus</li>
+              <li>ULT: Metro</li>
+              <li>JAX: Arlanda Express</li>
+              <li>JLT: Local train</li>
+              <li>JRE: Regional train</li>
+              <li>JIC: InterCity train</li>
+              <li>JPT: PågaTåg</li>
+              <li>JEX: Express train</li>
+              <li>SLT: Tram</li>
+              <li>FLT: Lokal ferry</li>
+              <li>FUT: International ferry</li>
+              </ul>
+              "
+      enum:
+        - "BLT"
+        - "BXB"
+        - "ULT"
+        - "JAX"
+        - "JLT"
+        - "JRE"
+        - "JIC"
+        - "JPT"
+        - "JEX"
+        - "SLT"
+        - "FLT"
+        - "FUT"
+    JourneyStatus:
+      type: string
+      example: 'P'
+      description: "Contains the status of the journey: **P**lanned, **R**eplacement, **A**dditional or **S**pecial"
+      xml:
+        attribute: true
+      enum: [ P, R, A, S ]
+    JourneyDetailRef:
+      required:
+        - ref
+      type: object
+      description: Reference to journey details of a vehicle.
+      properties:
+        ref:
+          type: string
+          example: "1|65488|20|80|22092021"
+    requestId:
+      type: string
+      description: 'The request id, which matches the `requestId` parameter from the request, or a random string if no requestId was provided.'
+      example: 'custom-request-id'
+      xml:
+        attribute: true
+
+
   securitySchemes:
     api_key:
       type: apiKey

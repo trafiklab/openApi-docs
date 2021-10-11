@@ -549,6 +549,14 @@ paths:
           items:
             type: integer
             format: int32
+      - name: passList
+        in: query
+        description: Enables/disables the return of the passlist for departure. A passlist is a list of all stops where the vehicle halts after departing from the queried stop.
+        schema:
+          type: integer
+          format: int32
+          enum: [0,1]
+          default: 1
       - name: lang
         in: query
         description: 'The language used for informational texts and error messages.'
@@ -674,6 +682,14 @@ paths:
           items:
             type: integer
             format: int32
+      - name: passList
+        in: query
+        description: Enables/disables the return of the passlist for each arrival. A passlist is a list of all stops where the vehicle stops before arriving at the queried stop.
+        schema:
+          type: integer
+          format: int32
+          enum: [0,1]
+          default: 1
       - name: lang
         in: query
         description: 'The language used for informational texts and error messages.'
@@ -1190,6 +1206,7 @@ components:
         type:
           type: string
           example: S
+          description: The attribute type specifies the type of the departing journey.
           xml:
             attribute: true
         stop:
@@ -1259,11 +1276,6 @@ components:
         name:
           type: string
           example: Länstrafik - Spårväg 7
-          xml:
-            attribute: true
-        type:
-          type: string
-          example: S
           xml:
             attribute: true
         stop:
