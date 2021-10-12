@@ -1161,7 +1161,7 @@ components:
         line:
           type: string
           example: "X4"
-          description: "Number for display"
+          description: "Line name if available"
           xml:
             attribute: true
         lineId:
@@ -1206,20 +1206,11 @@ components:
             - '256'
             - '512'
         catOut:
-          type: string
-          example: "BLT"
-          xml:
-            attribute: true
+          $ref: "#/components/schemas/transportCategory"
         catIn:
-          type: string
-          example: "BLT"
-          xml:
-            attribute: true
+          $ref: "#/components/schemas/transportCategory"
         catOutS:
-          type: string
-          example: "BLT"
-          xml:
-            attribute: true
+          $ref: "#/components/schemas/transportCategory"
         catOutL:
           type: string
           example: Länstrafik - Buss
@@ -1358,7 +1349,7 @@ components:
         - name
         - type
         - stop
-        - stopId
+        - stopid
         - stopExtId
         - time
         - date
@@ -1400,7 +1391,7 @@ components:
           example: T-Centralen Spårv (Stockholm kn)
           xml:
             attribute: true
-        stopId:
+        stopid:
           type: string
           example: "A=1@O=Stockholm Centralstation@X=18058151@Y=59330136@u=87@U=80@L=740000001@"
           description: "Internal id, do not use"
@@ -1447,7 +1438,7 @@ components:
         - name
         - type
         - stop
-        - stopId
+        - stopid
         - stopExtId
         - time
         - date
@@ -1489,7 +1480,7 @@ components:
           example: T-Centralen Spårv (Stockholm kn)
           xml:
             attribute: true
-        stopId:
+        stopid:
           type: string
           example: "A=1@O=Stockholm Centralstation@X=18058151@Y=59330136@u=87@U=80@L=740000001@"
           description: "Internal id, do not use"
@@ -1539,20 +1530,19 @@ components:
               xml:
                 name: StopLocation
               items:
-                $ref: '#/components/schemas/StopLookupEntryWrapper'
+                required:
+                  - StopLocation
+                type: object
+                properties:
+                  StopLocation:
+                    $ref: '#/components/schemas/StopLookupEntry'
+                xml:
+                  name: LocationList
         requestId:
           $ref: '#/components/schemas/requestId'
       xml:
         name: LocationList
-    StopLookupEntryWrapper:
-      required:
-        - StopLocation
-      type: object
-      properties:
-        StopLocation:
-          $ref: '#/components/schemas/StopLookupEntry'
-      xml:
-        name: LocationList
+
     StopLookupEntry:
       required:
         - id
