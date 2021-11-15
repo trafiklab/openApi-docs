@@ -48,10 +48,6 @@ paths:
       security:
         - api_key: []
 
-
-
-
-
 components:
   parameters:
     Operator:
@@ -61,81 +57,93 @@ components:
       schema:
         type: string
         enum:
-          - sl
-          - ul
-          - sormland
-          - otraf
-          - krono
-          - klt
-          - gotland
           - blekinge
-          - skane
-          - halland
-          - vt
-          - varm
-          - orebro
-          - vl
-          - dt
-          - xt
           - dintur
+          - dt
+          - gotland
+          - halland
+          - jamtland
+          - jlt
+          - klt
+          - krono
+          - norrbotten
+          - orebro
+          - otraf
           - sj
+          - skane
+          - sl
+          - sormland
+          - ul
+          - varm
+          - vasterbotten
+          - vastmanland
+          - vt
+          - xt
       description: The operator id.
       examples:
-        sl:
-          value: sl
-          description: SL
-        ul:
-          value: ul
-          description: UL
-        sormland:
-          value: sormland
-          description: Sörmlandstrafiken
-        otraf:
-          value: otraf
-          description: Östgötatrafiken
-        krono:
-          value: krono
-          description: Länstrafik Kronoberg
-        klt:
-          value: klt
-          description: Kalmar Länstrafik
-        gotland:
-          value: gotland
-          description: Gotland
         blekinge:
-          value: blekinge
           description: Blekingetrafiken
-        skane:
-          value: skane
-          description: Skånetrafiken
-        halland:
-          value: halland
-          description: Hallandstrafiken
-        vt:
-          value: vt
-          description: Västtrafik
-        vl:
-          value: vl
-          description: Västmanland
-        dt:
-          value: dt
-          description: Dalatrafiken
-        varm:
-          value: varm
-          description: Värmlandstrafiken och Karlstadsbuss
-        orebro:
-          value: orebro
-          description: Örebro
-        xt:
-          value: xt
-          description: X-trafik
+          value: blekinge
         dintur:
-          value: dintur
           description: DinTur (Västernorrland)
+          value: dintur
+        dt:
+          description: Dalatrafiken
+          value: dt
+        gotland:
+          description: Gotland
+          value: gotland
+        halland:
+          description: Hallandstrafiken
+          value: halland
+        jlt:
+          description: Jämtland Länstrafik
+          value: jlt
+        klt:
+          description: Kalmar Länstrafik
+          value: klt
+        krono:
+          description: Länstrafik Kronoberg
+          value: krono
+        norrbotten:
+          description: Länstrafik Norrbotten
+          value: norrbotten
+        orebro:
+          description: Örebro
+          value: orebro
+        otraf:
+          description: Östgötatrafiken
+          value: otraf
         sj:
-          value: sj
           description: SJ, Snälltåget och Tågab
-
+          value: sj
+        skane:
+          description: Skånetrafiken
+          value: skane
+        sl:
+          description: SL
+          value: sl
+        sormland:
+          description: Sörmlandstrafiken
+          value: sormland
+        ul:
+          description: UL
+          value: ul
+        varm:
+          description: Värmlandstrafiken och Karlstadsbuss
+          value: varm
+        vasterbotten:
+          description: Västerbotten
+          value: vl
+        vastmanland:
+          description: Västmanland
+          value: vastmanland
+        vt:
+          description: Västtrafik
+          value: vt
+        xt:
+          description: X-trafik
+          value: xt
     Accept-encoding:
       name: Accept-encoding
       in: header
