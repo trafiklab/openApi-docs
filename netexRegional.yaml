@@ -12,7 +12,7 @@ info:
   version: 1.0.0
 externalDocs:
   description: Read the complete Trafiklab docs
-  url: https://docs.trafiklab.se
+  url: https://trafiklab.se
 servers:
   - url: https://opendata.samtrafiken.se/
 tags:
@@ -20,7 +20,7 @@ tags:
     description: Fetch NeTEx datasets for Swedish public transport operators.
     externalDocs:
       description: Find out more
-      url: https://docs.trafiklab.se/public-transport-data/our-data-and-apis/netex
+      url: https://www.trafiklab.se/api/trafiklab-apis/netex-regional/
 paths:
   /netex/{operator}/{operator}.zip:
     get:
