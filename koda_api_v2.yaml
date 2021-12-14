@@ -1,0 +1,154 @@
+openapi: 3.0.0
+info:
+  description: "This is the prototype of the KoDa API version 2.0.
+    You can find out more about the KoDa project on the [RISE project page](https://www.ri.se/sv/vad-vi-gor/projekt/koda)"
+  version: 2.0
+  title: KoDa API version 2.0
+  contact:
+    email: per.broms@ri.se
+  license:
+    name: Documentation Apache 2.0 / Data CC0 1.0 (Creative Commons Zero)
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Find out more about the KoDa API
+  url: https://koda.linkoping-ri.se/docs
+
+servers:
+  - url: https://api.koda.trafiklab.se/KoDa/api/v2
+  # - url: https://koda.linkoping-ri.se/KoDa/api/v2
+
+tags:
+  - name: GTFS historic data
+    description: Accessing raw data as it was downloaded from the respective TrafikLab APIs feeds.
+    externalDocs:
+      description: Find out more
+      url: https://koda.trafiklab.se
+
+paths:
+  /gtfs-rt/{operatorId}/{feedId}:
+    get:
+      produces:
+        - application/octet-stream
+      tags:
+        -  GTFS historic data
+      summary: Download the GTFS-RT raw data.
+      description: Downloads an archive according to the specified operator id, feed id, date, hour and raw/processed (see below).
+      operationId: fetchRawData
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: operatorId
+          in: path
+          description: Abrevation of the operator of intrest
+          required: true
+          schema:
+            type: string
+            enum: [dt,klt,otraf,skane,sl,ul,varm,xt]
+          example: klt     # Example of a parameter value
+        - name: feedId
+          in: path
+          description: Datafeed of interest
+          required: true
+          schema:
+            type: string
+            enum: [VehiclePositions, TripUpdates, ServiceAlerts]
+          example: TripUpdates     # Example of a parameter value
+        - $ref: "#/components/schemas/date_query"
+        - $ref: "#/components/schemas/hour_query"
+      responses:
+        "200":
+          description: Successful operation, a 7-zip file will be downloaded.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "202":
+          description: Request accepted. Creating a 7-zip file containing the requested data.
+          content:
+        "400":
+          $ref: "#/components/responses/InvalidParameterError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotExistingError"
+
+  /gtfs-static/{operatorId}:
+    get:
+      produces:
+        - application/octet-stream
+      tags:
+        -  GTFS historic data
+      summary: Download the GTFS static raw data.
+      description: Downloads an archive according to the specified operatorId, date and raw/processed (see below).
+      operationId: fetchRawData
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: operatorId
+          in: query
+          description: Abrevation of the operator of intrest
+          required: true
+          schema:
+            type: string
+            enum: [blekinge,dintur,dt,gotland,halland,jamtland,jlt,klt,krono,norrbotten,orebro,otraf,sj,skane,sl,sormland,ul,varm,vasterbotten,vastmanland,vt,xt]
+          example: klt     # Example of a parameter value
+        - $ref: "#/components/schemas/date_query"
+      responses:
+        "200":
+          description: Successful operation.
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/InvalidParameterError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotExistingError"
+
+components:
+  requestBodies:
+
+  schemas:
+    date_query:
+      name: date
+      in: query
+      description: Date value that need to be considered for query
+      required: true
+      schema:
+        type: string
+        format: date
+      example: "2021-01-12" # Example of a parameter value
+    hour_query:
+      name: hour
+      in: query
+      required: false
+      description: >
+        Specify the hour of the date. </br>
+        If omitted full day is assumed </br>
+      #         _NB!_ Only valid in the VehiclePositions, TripUpdates, ServiceAlerts feeds
+      schema:
+        type: integer
+        default: None
+      example: 11  # Example of a parameter value
+
+  securitySchemes:
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: query       # can be "header", "query" or "cookie"
+      name: key  # name of the header, query parameter or cookie
+
+  responses:
+    InvalidParameterError:
+      description: Invalid parameter value.
+    UnauthorizedError:
+      description: API key is missing or invalid.
+      headers:
+        WWW_Authenticate:
+          schema:
+            type: string
+    NotExistingError:
+      description: Data for the requested company or feed or date does not exist.
