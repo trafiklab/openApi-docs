@@ -86,7 +86,7 @@ paths:
         - ApiKeyAuth: []
       parameters:
         - name: operatorId
-          in: query
+          in: path
           description: Abrevation of the operator of intrest
           required: true
           schema:
