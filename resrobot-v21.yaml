@@ -238,8 +238,8 @@ paths:
       parameters:
       - name: originId
         in: query
-        description: "The 9-digit stop ID for the origin of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2."
-        required: true
+        description: "The 9-digit stop ID for the origin of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2. Either originId or originCoordLat+originCoordLong are required."
+        required: false
         style: form
         schema:
           type: integer
@@ -247,8 +247,8 @@ paths:
           pattern: '^\d{9}$'
       - name: destId
         in: query
-        description: "The 9-digit stop ID for the destination of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2."
-        required: true
+        description: "The 9-digit stop ID for the destination of your journey. This id can be retrieved from the station lookup endpoint `extId`, nearby stops endpoint `extId`, or from the stops.txt file in GTFS Sverige 2. Either destId or destCoordLat+destCoordLong are required."
+        required: false
         style: form
         schema:
             type: integer
@@ -455,8 +455,9 @@ paths:
           <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
           <li>The minimum walking distance (in meters)
           <li>The maximum walking distance (in meters)
-          <li>The relative walking speed (in %)
+          <li>The relative walking speed (in %), relative to the default walking speed of around 4,5km/h
         </ul>
+        <p>Defaults can be left empty. Defaults at the end can be left out. For example, to turn of walking completely, originWalk=0 suffices.</p>
         <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter originWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
         schema:
           type: array
@@ -471,8 +472,9 @@ paths:
           <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
           <li>The minimum walking distance (in meters)
           <li>The maximum walking distance (in meters)
-          <li>The relative walking speed (in %)
+          <li>The relative walking speed (in %), relative to the default walking speed of around 4,5km/h
         </ul>
+        <p>Defaults can be left empty. Defaults at the end can be left out. For example, to turn of walking completely, destWalk=0 suffices.</p>
         <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter destWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
         schema:
           type: array
@@ -603,7 +605,7 @@ paths:
           pattern: '^\d{9}$'
       - name: products
         in: query
-        description: 'The transport modes which are allowed in the journey.<br>
+        description: 'Filter the transport modes which are allowed in the journey. By default all transport modes are allowed.<br>
         This field is calculated by taking the sum of the modes you want to include:
         <ul>
           <li> 2: High-speed and express trains</li>
@@ -958,6 +960,7 @@ components:
         - idx
         - name
         - type
+        - duration
       type: object
       properties:
         Origin:
@@ -1002,6 +1005,18 @@ components:
           example: Skiffergatan (Örebro kn)
           xml:
             attribute: true
+        dist:
+          type: integer
+          example: 797
+          description: "Walking distance, only present for walking legs"
+          xml:
+            attribute: true
+        duration:
+          type: string
+          example: "PT10M"
+          description: "Duration for a leg"
+          xml:
+            attribute: true
         JourneyStatus:
           $ref: '#/components/schemas/JourneyStatus'
         JourneyDetailRef:
@@ -1028,8 +1043,16 @@ components:
         type:
           type: string
           example: ST
+          description: "Valid values are ST (stop/station), ADR (address), POI (point of interest), CRD (coordinate), MCP (mode change point) or HL (hailing point)."
           xml:
             attribute: true
+          enum:
+            - ST
+            - ADR
+            - POI
+            - CRD
+            - MCP
+            - HL
         id:
           type: string
           example: "A=1@O=Stockholm Centralstation@X=18058151@Y=59330136@u=87@U=80@L=740000001@"
@@ -1089,8 +1112,16 @@ components:
         type:
           type: string
           example: ST
+          description: "Valid values are ST (stop/station), ADR (address), POI (point of interest), CRD (coordinate), MCP (mode change point) or HL (hailing point)."
           xml:
             attribute: true
+          enum:
+            - ST
+            - ADR
+            - POI
+            - CRD
+            - MCP
+            - HL
         id:
           type: string
           example: "A=1@O=Örebro Centralstation@X=15211348@Y=59278942@u=87@U=80@L=740000133@"
