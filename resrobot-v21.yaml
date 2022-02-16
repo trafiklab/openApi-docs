@@ -968,13 +968,15 @@ components:
         Destination:
           $ref: '#/components/schemas/Destination'
         Product:
-          $ref: '#/components/schemas/Product'
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
         Stops:
           type: array
           items:
             $ref: '#/components/schemas/Stop'
         idx:
-          type: string
+          type: integer
           example: 0
           xml:
             attribute: true
