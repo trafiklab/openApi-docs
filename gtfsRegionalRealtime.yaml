@@ -116,6 +116,7 @@ components:
           - varm
           - dt
           - xt
+          - vastmanland
       description: The operator id.
       examples:
         sl:
@@ -142,6 +143,9 @@ components:
         xt:
           value: xt
           description: X-trafik
+        vastmanland:
+          value: vastmanland
+          description: Västmanland Länstrafik (VL)
     Operator-positions:
       in: path
       name: operator
@@ -156,6 +160,7 @@ components:
           - varm
           - dt
           - xt
+          - vastmanland
       description: The operator id.
       examples:
         ul:
@@ -179,6 +184,9 @@ components:
         xt:
           value: xt
           description: X-trafik
+        vastmanland:
+          value: vastmanland
+          description: Västmanland Länstrafik (VL)
     Accept-encoding:
       name: Accept-encoding
       in: header
