@@ -37,7 +37,7 @@ paths:
     get:
       tags:
       - Station lookup
-      summary: 'Available from March 24th, 2022. Use this method to search for stations and stops based on a name.'
+      summary: 'Use this method to search for stations and stops based on a name.'
       description: 'Use this method to search for stations and stops based on a name. You can search for stations for both departures and arrival of a call. The stations found can then be presented to a user so that they can choose exactly which station they want to travel to or from. This method is not designed to be used for auto-complete solutions where a search is done while the user enters the name of a station. If you wish to use autocomplete, or if you want to provide your users with **the best experience**, please use the **GTFS Sverige 2 stops.txt** file as an offline database.
         <h3>Order of the results</h3>
         <p>The results are ordered by station “weight”, where stations with more weight are shown higher in the list. Each station or stop is assigned a weight value which indicates how “busy” this station is. The higher the value, the more “busy” the station is. The calculation is based on the product classes. For each product class operating at this stop, the frequency how often this product class operates is rated between 0 and 3 where 0 means this product isn’t operating and 3 means that this product operates at a high frequency. Then an individual weight is calculated for product class by multiplying the frequency rating with a certain factor. These factors take into account that traffic by trains for example weighs higher than traffic by buses. The weight for the station is then the sum over all individual weights for each product class.</p>'
@@ -144,12 +144,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/StopLookupResponse'
       security:
-        - api_key_routeplanner: []
+        - api_key_resrobot_v21: []
   /location.nearbystops:
     get:
       tags:
       - Station lookup
-      summary: 'Available from March 24th, 2022. Use this method to search for stations and stops nearby a given location.'
+      summary: 'Use this method to search for stations and stops nearby a given location.'
       description: 'Use this method to find stations and stops within a certain distance of given coordinates. Submit the central coordinates and the radius to search in order to retrieve a list of nearby stops, including the type of traffic (train, bus, etc.). Coordinates should be given in WGS84 format (EPSG:4326).
       <h4>Privacy</h4>
       <p>The location of a person is personal data according to the European General Data Protection Regulation (GDPR). This means you are required to obtain permission from users before using this data. You are also required to take measures to protect this personal data. This means you should not log it, and you should always use HTTPS connections. If a secure HTTPS connection is not possible, the client should not transmit coordinates.</p>'
@@ -228,7 +228,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/StopLookupResponse'
       security:
-        - api_key_routeplanner: []
+        - api_key_resrobot_v21: []
   /trip:
     get:
       tags:
@@ -534,7 +534,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/LocationMissingException'
       security:
-      - api_key_routeplanner: []
+      - api_key_resrobot_v21: []
   /departureBoard:
     get:
       tags:
@@ -689,7 +689,7 @@ paths:
           description: Not found
           content: {}
       security:
-      - api_key_timetable: []
+      - api_key_resrobot_v21: []
   /arrivalBoard:
     get:
       tags:
@@ -842,7 +842,7 @@ paths:
           description: Not found
           content: {}
       security:
-      - api_key_timetable: []
+      - api_key_resrobot_v21: []
 components:
   schemas:
     JourneyPlannerResult:
@@ -1719,11 +1719,7 @@ components:
         attribute: true
 
   securitySchemes:
-    api_key_routeplanner:
-      type: apiKey
-      name: accessId
-      in: query
-    api_key_timetable:
+    api_key_resrobot_v21:
       type: apiKey
       name: accessId
       in: query
