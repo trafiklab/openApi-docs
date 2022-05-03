@@ -351,7 +351,9 @@ paths:
         schema:
             type: integer
             format: int64
-            default: 4
+            default: 5
+            minimum: 1
+            maximum: 6
       - name: numB
         in: query
         description: 'The minimum number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested. Searching backwards can significantly slow down your request.'
@@ -360,7 +362,9 @@ paths:
         schema:
             type: integer
             format: int64
-            default: 1
+            default: 0
+            minimum: 0
+            maximum: 6
       - name: maxChange
         in: query
         description: The maximum number of changes in the journey.
