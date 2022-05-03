@@ -343,20 +343,9 @@ paths:
         schema:
             type: integer
             format: int64
-      - name: numF
-        in: query
-        description: 'The minimum number of journeys, taking place _before_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested.'
-        required: false
-        style: form
-        schema:
-            type: integer
-            format: int64
-            default: 5
-            minimum: 1
-            maximum: 6
       - name: numB
         in: query
-        description: 'The minimum number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested. Searching backwards can significantly slow down your request.'
+        description: 'The minimum number of journeys, taking place _before_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Since numF is always at least 1, numB can never be more than 5. Note that the response can contain more results than requested.'
         required: false
         style: form
         schema:
@@ -364,6 +353,17 @@ paths:
             format: int64
             default: 0
             minimum: 0
+            maximum: 5
+      - name: numF
+        in: query
+        description: 'The minimum number of journeys, taking place _after_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Note that the response can contain more results than requested. Searching backwards can significantly slow down your request.'
+        required: false
+        style: form
+        schema:
+            type: integer
+            format: int64
+            default: 5
+            minimum: 1
             maximum: 6
       - name: maxChange
         in: query
