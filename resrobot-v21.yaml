@@ -877,6 +877,8 @@ components:
         name: TripList
     Trip:
       required:
+        - Origin
+        - Destination
         - LegList
         - ServiceDays
         - idx
@@ -885,6 +887,10 @@ components:
         - duration
       type: object
       properties:
+        Origin:
+          $ref: '#/components/schemas/Origin'
+        Destination:
+          $ref: '#/components/schemas/Destination'
         ServiceDays:
           type: array
           xml:
