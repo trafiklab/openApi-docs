@@ -380,7 +380,7 @@ paths:
             format: int32
             enum: [0,1]
             default: 0
-      - name: passList
+      - name: passlist
         in: query
         description: Enables/disables the return of the passlist for each leg of the trip. A passlist is a list of all stops where the traveller passes without changing.
         schema:
@@ -549,7 +549,7 @@ paths:
           items:
             type: integer
             format: int32
-      - name: passList
+      - name: passlist
         in: query
         description: Enables/disables the return of the passlist for departure. A passlist is a list of all stops where the vehicle halts after departing from the queried stop.
         schema:
@@ -682,7 +682,7 @@ paths:
           items:
             type: integer
             format: int32
-      - name: passList
+      - name: passlist
         in: query
         description: Enables/disables the return of the passlist for each arrival. A passlist is a list of all stops where the vehicle stops before arriving at the queried stop.
         schema:
