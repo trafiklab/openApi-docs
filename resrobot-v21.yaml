@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: ResRobot APIs v2.1
   description: 'This collection of APIs allows to plan journeys using one or more of the public transport operators in Sweden. The API offers the functionality behind [ResRobot](https://resrobot.se) and includes train, bus, tram, subway for entire Sweden.'
@@ -1265,7 +1265,6 @@ components:
           example: Västtrafik
           xml:
             attribute: true
-
     Stop:
       required:
         - name
@@ -1398,9 +1397,14 @@ components:
       type: object
       properties:
         Stops:
-          type: array
-          items:
-            $ref: '#/components/schemas/Stop'
+          type: object
+          required:
+            - stop
+          properties:
+            stop:
+              type: array
+              items:
+                $ref: '#/components/schemas/Stop'
         ProductAtStop:
           $ref: '#/components/schemas/Product'
         Product:
