@@ -410,6 +410,7 @@ paths:
           description: 'The transport modes which are allowed in the journey.<br>
         This field is calculated by taking the sum of the modes you want to include:
         <ul>
+          <li> 1: Air traffic</li>
           <li> 2: High-speed and express trains</li>
           <li> 4: Regional and InterCity trains</li>
           <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
@@ -427,15 +428,34 @@ paths:
             format: int32
         - name: operators
           in: query
-          description: "Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id. Theses ids can be found in the 'GTFS Sverige 2' agencies.txt file. Multiple operators can be specified by concatenating their ids with a comma ',' as separation."
+          description: "Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id. Put an exclamation mark '!' in front of a value to avoid an operator. Theses ids can be found in the 'GTFS Sverige 2' agencies.txt file. Multiple operators can be specified by concatenating their ids with a comma ',' as separation."
           required: false
           style: form
           schema:
             type: array
             format: csv
             items:
-              type: integer
-              format: int32
+              type: string
+        - name: categories
+          in: query
+          description: "Filter which can be used to limit which transport categories can be used. Put an exclamation mark '!' in front of a value to avoid a category. Multiple categories can be specified by concatenating them with a comma ',' as separation."
+          required: false
+          style: form
+          schema:
+            type: array
+            format: csv
+            items:
+              type: string
+        - name: attributes
+          in: query
+          description: "Filter which can be used to limit which attributes trips should have. Put an exclamation mark '!' in front of a value to avoid certain attributes on a trip. Multiple attributes can be specified by concatenating them with a comma ',' as separation."
+          required: false
+          style: form
+          schema:
+            type: array
+            format: csv
+            items:
+              type: string
         - name: poly
           in: query
           description: Enables/disables the calculation of the polyline for each leg of the trip. This polyline visualises the exact route on a map.
@@ -609,9 +629,10 @@ paths:
             pattern: '^\d{9}$'
         - name: products
           in: query
-          description: 'Filter the transport modes which are allowed in the journey. By default all transport modes are allowed.<br>
+          description: 'Filter the transport modes should be included. By default all transport modes are allowed.<br>
         This field is calculated by taking the sum of the modes you want to include:
         <ul>
+          <li> 1: Air traffic</li>
           <li> 2: High-speed and express trains</li>
           <li> 4: Regional and InterCity trains</li>
           <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
@@ -629,15 +650,34 @@ paths:
             format: int32
         - name: operators
           in: query
-          description: Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id.
+          description: "Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id. Put an exclamation mark '!' in front of a value to avoid an operator. Theses ids can be found in the 'GTFS Sverige 2' agencies.txt file. Multiple operators can be specified by concatenating their ids with a comma ',' as separation."
           required: false
           style: form
           schema:
             type: array
             format: csv
             items:
-              type: integer
-              format: int32
+              type: string
+        - name: categories
+          in: query
+          description: "Filter which can be used to limit which transport categories departures should belong to. Put an exclamation mark '!' in front of a value to avoid a category. Multiple categories can be specified by concatenating them with a comma ',' as separation."
+          required: false
+          style: form
+          schema:
+            type: array
+            format: csv
+            items:
+              type: string
+        - name: attributes
+          in: query
+          description: "Filter which can be used to limit which attributes departures should have. Put an exclamation mark '!' in front of a value to avoid certain attributes. Multiple attributes can be specified by concatenating them with a comma ',' as separation."
+          required: false
+          style: form
+          schema:
+            type: array
+            format: csv
+            items:
+              type: string
         - name: passlist
           in: query
           description: Enables/disables the return of the passlist for departure. A passlist is a list of all stops where the vehicle halts after departing from the queried stop.
@@ -762,9 +802,10 @@ paths:
             format: int64
         - name: products
           in: query
-          description: 'The transport modes which are allowed in the journey.<br>
+          description: 'Filter the transport modes should be included. By default all transport modes are allowed.<br>
         This field is calculated by taking the sum of the modes you want to include:
         <ul>
+          <li> 1: Air traffic</li>
           <li> 2: High-speed and express trains</li>
           <li> 4: Regional and InterCity trains</li>
           <li> 8: Long-distance buses, e.g. ExpressBuss, Flygbussar</li>
@@ -782,15 +823,34 @@ paths:
             format: int32
         - name: operators
           in: query
-          description: Filter which can be used to limit which transport operators can be used. Transport operators are identified by their operator id.
+          description: "Filter which can be used to limit which transport operators should be included. Transport operators are identified by their operator id. Put an exclamation mark '!' in front of a value to avoid an operator. Theses ids can be found in the 'GTFS Sverige 2' agencies.txt file. Multiple operators can be specified by concatenating their ids with a comma ',' as separation."
           required: false
           style: form
           schema:
             type: array
             format: csv
             items:
-              type: integer
-              format: int32
+              type: string
+        - name: categories
+          in: query
+          description: "Filter which can be used to limit which transport categories arrivals should belong to. Put an exclamation mark '!' in front of a value to avoid a category. Multiple categories can be specified by concatenating them with a comma ',' as separation."
+          required: false
+          style: form
+          schema:
+            type: array
+            format: csv
+            items:
+              type: string
+        - name: attributes
+          in: query
+          description: "Filter which can be used to limit which attributes arrivals should have. Put an exclamation mark '!' in front of a value to avoid certain attributes. Multiple attributes can be specified by concatenating them with a comma ',' as separation."
+          required: false
+          style: form
+          schema:
+            type: array
+            format: csv
+            items:
+              type: string
         - name: passlist
           in: query
           description: Enables/disables the return of the passlist for each arrival. A passlist is a list of all stops where the vehicle stops before arriving at the queried stop.
