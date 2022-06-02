@@ -1,8 +1,8 @@
 openapi: 3.0.1
 
 info:
-  title: GTFS Sweden Static
-  description: 'This API provides a static GTFS dataset of high quality for Swedish public transport. The data is provided by Samtrafiken. All endpoints support HEAD requests and conditional GET requests. You can use these to determine if a new file is available.'
+  title: GTFS Sweden 3 Static
+  description: 'This API provides a static GTFS dataset of high quality for Swedish public transport, combining all the data available in Trafiklabs GTFS-regional feeds. The data is provided by Samtrafiken. All endpoints support HEAD requests and conditional GET requests. You can use these to determine if a new file is available.'
   contact:
     name: Trafiklab.se
     url: https://support.trafiklab.se

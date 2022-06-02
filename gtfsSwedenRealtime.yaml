@@ -2,7 +2,7 @@ openapi: 3.0.1
 
 info:
   title: GTFS Sweden Realtime
-  description: 'This API provides realtime GTFS data of high quality for Swedish public transport operators. The data is provided by Samtrafiken. All endpoints support HEAD requests and conditional GET requests. You can use these to determine if a new file is available. This data must be matched with the GTFS Sweden static dataset.'
+  description: 'This API provides realtime GTFS data of high quality for Swedish public transport operators, to be used in combination with the GTFS Sweden 3 feed. The data is provided by Samtrafiken. All endpoints support HEAD requests and conditional GET requests. You can use these to determine if a new file is available. This data must be matched with the GTFS Sweden static dataset.'
   contact:
     name: Trafiklab.se
     url: https://support.trafiklab.se
@@ -17,7 +17,7 @@ servers:
   - url: https://opendata.samtrafiken.se/
 tags:
   - name: GTFS-RT
-    description: "Fetch GTFS-Realtime files for Swedish public transport operators. GTFS-Realtime is used together with static GTFS Sweden files to provide realtime data, including even vehicle GPS positions for certain operators."
+    description: "Fetch GTFS-Realtime Sweden files for Swedish public transport operators. GTFS-Realtime Sweden is used together with static GTFS Sweden 3 files to provide realtime data, including even vehicle GPS positions for certain operators."
     externalDocs:
       description: Find out more
       url: https://www.trafiklab.se/api/trafiklab-apis/gtfs-regional/
