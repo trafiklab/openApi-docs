@@ -21,17 +21,17 @@ tags:
     description: Plan a trip
     externalDocs:
       description: Find out more
-      url: https://www.trafiklab.se/api/trafiklab-apis/resrobot-v2/route-planner/
+      url: https://www.trafiklab.se/api/trafiklab-apis/resrobot-v21/route-planner/
   - name: Station lookup
     description: Lookup stations
     externalDocs:
       description: Find out more
-      url: https://www.trafiklab.se/api/trafiklab-apis/resrobot-v2/stop-lookup/
+      url: https://www.trafiklab.se/api/trafiklab-apis/resrobot-v21/stop-lookup/
   - name: Timetables
     description: Retrieve departures or arrivals
     externalDocs:
       description: Find out more
-      url: https://www.trafiklab.se/api/trafiklab-apis/resrobot-v2/timetables/
+      url: https://www.trafiklab.se/api/trafiklab-apis/resrobot-v21/timetables/
 paths:
   /location.name:
     get:
