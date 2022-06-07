@@ -22,7 +22,7 @@ tags:
       description: Find out more
       url: https://www.trafiklab.se/api/trafiklab-apis/gtfs-regional/
 paths:
-  /gtfs-rt-sweden/{operator}/ServiceAlerts.pb:
+  /gtfs-rt-sweden/{operator}/ServiceAlertsSweden.pb:
     get:
       tags:
         - GTFS-RT
@@ -47,7 +47,7 @@ paths:
           $ref: "#/components/responses/429"
       security:
         - api_key: []
-  /gtfs-rt-sweden/{operator}/TripUpdates.pb:
+  /gtfs-rt-sweden/{operator}/TripUpdatesSweden.pb:
     get:
       tags:
         - GTFS-RT
@@ -72,7 +72,7 @@ paths:
           $ref: "#/components/responses/429"
       security:
         - api_key: []
-  /gtfs-rt-sweden/{operator}/VehiclePositions.pb:
+  /gtfs-rt-sweden/{operator}/VehiclePositionsSweden.pb:
     get:
       tags:
         - GTFS-RT
