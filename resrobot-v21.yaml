@@ -1271,13 +1271,24 @@ components:
             attribute: true
         catCode:
           type: string
-          description: "Product category code, matches GTFS route_types"
+          description: "Product category code
+          <ul>
+             <li> High speed trains, Snabbtåg, Arlanda Express: 1
+             <li> Regional trains, InterCity trains: 2
+             <li> Express busses, Flygbussar: 3
+             <li> Local trains Tåg, PågaTåg, Öresundståg: 4
+             <li> Metro, such as tunnelbanan: 5
+             <li> Tram such as Spårvagn, Tvärbanan: 6
+             <li> Busses: 7
+             <li> Ferries and international ferries: 8
+             <li> Taxi: 9
+          </ul>"
           example: "7"
           xml:
             attribute: true
         cls:
           type: string
-          description: "Product category in decimal form.
+          description: "Product class.
           <ul>
             <li> 1: Airplanes</li>
             <li> 2: High-speed and express trains</li>
