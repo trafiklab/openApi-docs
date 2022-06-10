@@ -1750,8 +1750,9 @@ components:
               <ul>
               <li>BLT: Regional bus</li>
               <li>BXB: Express bus</li>
+              <li>BAX: Airport Express bus</li>
               <li>ULT: Metro</li>
-              <li>JAX: Arlanda Express</li>
+              <li>JAX: Airport Express train</li>
               <li>JEX: Express train</li>
               <li>JIC: InterCity train</li>
               <li>JLT: Local train</li>
@@ -1766,6 +1767,7 @@ components:
       enum:
         - "BLT"
         - "BXB"
+        - "BAX"
         - "ULT"
         - "JAX"
         - "JLT"
