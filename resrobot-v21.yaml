@@ -341,8 +341,7 @@ paths:
           required: false
           style: form
           schema:
-            type: integer
-            format: int64
+            type: string
         - name: numB
           in: query
           description: 'The minimum number of journeys, taking place _before_ the specified search time, that should be returned. The values of the numF and numB parameters should not be higher than 6. I.e. _numF+numB<=6_. Since numF is always at least 1, numB can never be more than 5. Note that the response can contain more results than requested.'
