@@ -1750,6 +1750,7 @@ components:
               <li>BLT: Regional bus</li>
               <li>BXB: Express bus</li>
               <li>BAX: Airport Express bus</li>
+              <li>BRE: Regional bus</li>
               <li>ULT: Metro</li>
               <li>JAX: Airport Express train</li>
               <li>JEX: Express train</li>
@@ -1767,6 +1768,7 @@ components:
         - "BLT"
         - "BXB"
         - "BAX"
+        - "BRE"
         - "ULT"
         - "JAX"
         - "JLT"
