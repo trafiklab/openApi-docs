@@ -552,10 +552,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocationMissingException'
+                $ref: '#/components/schemas/ResrobotException'
             application/xml:
               schema:
-                $ref: '#/components/schemas/LocationMissingException'
+                $ref: '#/components/schemas/ResrobotException'
       security:
         - api_key_resrobot_v21: [ ]
   /departureBoard:
@@ -724,10 +724,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocationMissingException'
+                $ref: '#/components/schemas/ResrobotException'
             application/xml:
               schema:
-                $ref: '#/components/schemas/LocationMissingException'
+                $ref: '#/components/schemas/ResrobotException'
         404:
           description: Not found
           content: { }
@@ -897,10 +897,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocationMissingException'
+                $ref: '#/components/schemas/ResrobotException'
             application/xml:
               schema:
-                $ref: '#/components/schemas/LocationMissingException'
+                $ref: '#/components/schemas/ResrobotException'
         404:
           description: Not found
           content: { }
@@ -1401,7 +1401,7 @@ components:
           xml:
             attribute: true
 
-    LocationMissingException:
+    ResrobotException:
       required:
         - errorCode
         - errorText
@@ -1409,9 +1409,32 @@ components:
       properties:
         errorCode:
           type: string
-          example: SVC_LOC
+          example: API_AUTH
           xml:
             attribute: true
+          enum:
+            - API_AUTH
+            - API_QUOTA
+            - API_TOO_MANY_REQUESTS
+            - API_PARAM
+            - API_FORMAT
+            - SVC_PARAM
+            - SVC_LOC
+            - SVC_LOC_ARR
+            - SVC_LOC_DEP
+            - SVC_LOC_VIA
+            - SVC_LOC_EQUAL
+            - SVC_LOC_NEAR
+            - SVC_DATATIME
+            - SVC_DATATIME_PERIOD
+            - SVC_PROD
+            - SVC_CTX
+            - SVC_NO_RESULT
+            - SVC_FAILED_SEARCH
+            - SVC_NO_MATCH
+            - INT_ERR
+            - INT_GATEWAY
+            - INT_TIMEOUT
         errorText:
           type: string
           example: location missing or invalid
