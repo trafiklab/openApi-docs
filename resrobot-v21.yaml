@@ -1561,7 +1561,7 @@ components:
           example: true
         transportCategory:
           $ref: '#/components/schemas/transportCategory'
-        JouurneyStatus:
+        JourneyStatus:
           $ref: '#/components/schemas/JourneyStatus'
         JourneyDetailRef:
           $ref: '#/components/schemas/JourneyDetailRef'
