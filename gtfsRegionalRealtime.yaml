@@ -165,6 +165,7 @@ components:
           - dt
           - xt
           - vastmanland
+          - krono
       description: The operator id.
       examples:
         ul:
@@ -191,6 +192,9 @@ components:
         vastmanland:
           value: vastmanland
           description: Västmanland Länstrafik (VL)
+        krono:
+          value: krono
+          description: Kronobergs Länstrafik
     Accept-encoding:
       name: Accept-encoding
       in: header
