@@ -478,7 +478,7 @@ paths:
           <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
           <li>The minimum walking distance (in meters)
           <li>The maximum walking distance (in meters)
-          <li>The relative walking speed (in %), relative to the default walking speed of around 4,5km/h
+          <li>The relative walking time (in %), relative to the default walking speed of around 4,5km/h. A higher value means walking takes a longer time.
         </ul>
         <p>Defaults can be left empty. Defaults at the end can be left out. For example, to turn of walking completely, originWalk=0 suffices.</p>
         <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter originWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
@@ -495,7 +495,7 @@ paths:
           <li>Whether or not to enable walking in the beginning of a trip. Can be 0 or 1.
           <li>The minimum walking distance (in meters)
           <li>The maximum walking distance (in meters)
-          <li>The relative walking speed (in %), relative to the default walking speed of around 4,5km/h
+          <li>The relative walking time (in %), relative to the default walking speed of around 4,5km/h. A higher value means walking takes a longer time.
         </ul>
         <p>Defaults can be left empty. Defaults at the end can be left out. For example, to turn of walking completely, destWalk=0 suffices.</p>
         <p>E.g. To enable walk, minimum distance should be zero meters, maximum distance should be 1000 meters set the parameter destWalk=1,0,1000. If the default distance should be used, just put no value, e.g 1,,1500 to have walk enabled, default minimum and 1500 meters as maximum.</p>"
