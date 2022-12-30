@@ -524,7 +524,7 @@ paths:
             default: sv
         - name: format
           in: query
-          description: Whether or not to include the list of stations which are passed on this journey.
+          description: The format in which the response will be sent.
           schema:
             type: string
             enum: [ json, xml ]
