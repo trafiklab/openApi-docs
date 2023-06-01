@@ -471,7 +471,7 @@ paths:
             format: int32
             enum: [ 0,1 ]
             default: 0
-        - name: origWalk
+        - name: originWalk
           in: query
           description: "Enables/disables using footpaths in the beginning of a trip when searching from an address. To fine-tune the minimum and/or maximum distance to the next public transport station, provide the following values separated by comma:
         <ul>
