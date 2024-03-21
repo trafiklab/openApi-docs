@@ -157,15 +157,17 @@ components:
       schema:
         type: string
         enum:
-          - ul
-          - otraf
-          - klt
-          - skane
-          - varm
           - dt
-          - xt
-          - vastmanland
+          - jlt
           - krono
+          - orebro
+          - skane
+          - sl
+          - ul
+          - vastmanland
+          - varm
+          - xt
+          - otraf
       description: The operator id.
       examples:
         ul:

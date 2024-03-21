@@ -108,15 +108,17 @@ components:
       schema:
         type: string
         enum:
+          - dt
+          - jlt
+          - krono
+          - orebro
+          - skane
           - sl
           - ul
-          - otraf
-          - klt
-          - skane
-          - varm
-          - dt
-          - xt
           - vastmanland
+          - varm
+          - xt
+          - otraf
       description: The operator id.
       examples:
         sl:
