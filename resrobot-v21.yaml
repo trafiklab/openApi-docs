@@ -1770,10 +1770,10 @@ components:
         attribute: true
       description: "Possible values:
               <ul>
-              <li>BLT: Regional bus</li>
+              <li>BLT: Regional bus (länstrafik), e.g. SL, UL, Skånetrafiken</li>
               <li>BXB: Express bus</li>
               <li>BAX: Airport Express bus</li>
-              <li>BRE: Regional bus</li>
+              <li>BRE: Regional bus other than länstrafik</li>
               <li>BBL: Train replacement bus</li>
               <li>ULT: Metro</li>
               <li>JAX: Airport Express train</li>
