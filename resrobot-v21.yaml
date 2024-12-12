@@ -325,6 +325,15 @@ paths:
             type: integer
             format: int64
             pattern: '^\d{9}$'
+        - name: avoidId
+          in: query
+          description: '9-Digit id of a station where transfers should be avoided. This id can be determined in the same ways as origin or destination ids.'
+          required: false
+          style: form
+          schema:
+            type: integer
+            format: int64
+            pattern: '^\d{9}$'
         - name: viaWaitTime
           in: query
           description: 'Defines the minimum waiting time spent at the specified via station in minutes. This field is used in combination with viaId'
