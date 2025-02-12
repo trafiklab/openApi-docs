@@ -720,14 +720,18 @@ paths:
             default: 'random string'
       responses:
         200:
-          description: Successful request
+          description: Successful request. Note that the SVC_NO_RESULTS error may be returned when there are no results for your search.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListOfDepartures'
+                oneOf:
+                  - $ref: '#/components/schemas/ListOfDepartures'
+                  - $ref: '#/components/schemas/ResrobotException'
             application/xml:
               schema:
-                $ref: '#/components/schemas/ListOfDepartures'
+                oneOf:
+                  - $ref: '#/components/schemas/ListOfDepartures'
+                  - $ref: '#/components/schemas/ResrobotException'
         400:
           description: Invalid Location ID supplied
           content:
